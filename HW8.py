@@ -17,8 +17,6 @@ class Lottery:
         self.random_list = random_list
         self.lottery_list = lottery_list
         self.lottery_win = lottery_win
-    def __eq__(self,other):
-        return self.my_ticket == other.my_ticket and self.lottery_list == other.lottery_list
     def get_code(self):
         for i in range(4):
             self.lottery_list.append(self.random_list[random.randint(0,14)])
@@ -32,8 +30,8 @@ class Lottery:
             self.get_code()
             self.lottery_win += 1
             print(self.lottery_list)
-            #if self.my_ticket == self.lottery_list:
-                #break
+            if self.my_ticket == self.lottery_list:
+                break
             self.lottery_list = []
         print(f"It took {self.lottery_win} attempts to win the lottery")
 
