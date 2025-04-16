@@ -1,3 +1,4 @@
+import random
 class VirtualPet:
     def __init__(self,name=str,price=float,condition=100.00,happiness=100,hunger=100,energy=100):
         """Initializes class VirtualPet
@@ -22,6 +23,7 @@ class VirtualPet:
         Returns:
             str: name, species, condition, happiness, hunger, energy, price
         """
+        self.check_stats()
         return f"Name: {self.name}\nSpecies: {self.species}\nCondition: {self.condition_status()}%\nHappiness: {self.status(self.happiness,1)}\nHunger: {self.status(self.hunger,2)}\nEnergy: {self.status(self.energy,3)}\nPrice: ${self.price_status():0.2f}"
     def __add__(self,other):
         """Overrides adding for VirtualPet class
@@ -94,6 +96,28 @@ class VirtualPet:
                     return hunger_list[6]
                 else:
                     return energy_list[6]
+    def check_stats(self):
+        if self.happiness < 0:
+            self.happiness = 0
+        if self.hunger < 0:
+            self.hunger = 0
+        if self.energy < 0:
+            self.energy = 0
+    def play(self):
+        play_input = int(input(f"How hard do you want to play with {self.name}?\n1. Gentle\n2. Normal\n3. Hard\n(1/2/3) "))
+        self.happiness += random.randint(5*play_input,10*play_input)
+        self.energy -= random.randint(1*play_input,5*play_input)
+    def eat(self):
+        eat_input = int(input(f"How much do you want to feed {self.name}?\n1. A little\n2. Normal\n3. A lot\n(1/2/3)"))
+        self.hunger += random.randint(5*eat_input,10*eat_input)
+        self.happiness += random.randint(1*eat_input,5*eat_input)
+        if self.hunger < 25 or 75 < self.hunger:
+            if self.hunger < 25:
+                self.energy -= random.randint(5,20)
+            elif 75 < self.hunger:
+                self.energy -= random.randint(0,5)
+        else:
+            self.energy += random.randint(1*eat_input,5*eat_input)
     
 class Dog(VirtualPet):
     species = "dog"
@@ -107,7 +131,10 @@ class Hamster(VirtualPet):
 def main():
     pet1 = Dog("Joe",250)
     print(pet1)
-    pet2 = Fish("Billy",50)
-    print(pet2)
+    pet1.play()
+    pet1.eat()
+    print(pet1)
+    #pet2 = Fish("Billy",50)
+    #print(pet2)
 if __name__ == main():
     main()
