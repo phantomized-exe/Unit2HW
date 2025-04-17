@@ -1,6 +1,6 @@
 import random
 class VirtualPet:
-    def __init__(self,name=str,price=float,condition=100.00,happiness=100,hunger=100,energy=100):
+    def __init__(self,name=str,price=float,condition=100.00,happiness=100,hunger=0,energy=100,days_starving=0):
         """Initializes class VirtualPet
 
         Args:
@@ -17,6 +17,7 @@ class VirtualPet:
         self.hunger = hunger
         self.energy = energy
         self.__price = price
+        self.days_starving = days_starving
     def __repr__(self):
         """Returns pet stats when class is printed
 
@@ -34,7 +35,17 @@ class VirtualPet:
         Returns:
             int: self value
         """
-        return self.happiness+other.happiness,self.hunger+other.hunger,self.energy+other.energy
+        return self.happiness+other.happiness,self.hunger+other.hunger,self.energy+other.energy,self.__price+other.__price
+    def __truediv__(self,other):
+        """Overrides division for VirtualPet class
+
+        Args:
+            other (int): other value
+
+        Returns:
+            int: self value
+        """
+        return self.happiness/other.happiness,self.hunger/other.hunger,self.energy/other.energy,self.__price/other.__price
     def condition_status(self):
         """Gets the condition of the pet by averaging happiness, hunger, and energy
         Returns:
@@ -69,7 +80,7 @@ class VirtualPet:
                 happiness_list=['feral','mad','sad','bored','happy','joyful','schizophrenic'],
                 hunger_list=['dying of hunger','starving','hungry','peckish','full','glutted','stomach bursting'],
                 energy_list=['zombie-like','weak','sluggish','lazy','energetic','frantic','crazy']):
-        """_summary_
+        """list of all possible conditions
 
         Args:
             status_num (int): the num stat
@@ -103,17 +114,29 @@ class VirtualPet:
             self.hunger = 0
         if self.energy < 0:
             self.energy = 0
+        if self.happiness > 150:
+            self.happiness = 150
+        if self.hunger < 150:
+            self.hunger = 150
+        if self.energy < 150:
+            self.energy = 150
     def play(self):
         play_input = int(input(f"How hard do you want to play with {self.name}?\n1. Gentle\n2. Normal\n3. Hard\n(1/2/3) "))
-        self.happiness += random.randint(5*play_input,10*play_input)
+        self.happiness += random.randint(1*play_input,10*play_input)
         self.energy -= random.randint(1*play_input,5*play_input)
     def eat(self):
-        eat_input = int(input(f"How much do you want to feed {self.name}?\n1. A little\n2. Normal\n3. A lot\n(1/2/3)"))
-        self.hunger += random.randint(5*eat_input,10*eat_input)
-        self.happiness += random.randint(1*eat_input,5*eat_input)
+        food_list = [0,random.randint(1,5),random.randint(5,10),random.randint(10,15)]
+        eat_input = int(input(f"How much do you want to feed {self.name}?\n1. Nothing\n2. A little: ${food_list[0]}\n3. Normal: ${food_list[1]}\n4. A lot: ${food_list[2]}\n(1/2/3/4) "))
+        if eat_input != 1:
+            self.days_starving = 0
+            self.hunger += random.randint(eat_input,food_list[eat_input-1])
+            self.happiness += eat_input*random.randint(0,food_list[eat_input-1])//2
+        else:
+            self.days_starving += 1
+            self.happiness -= self.days_starving*self.hunger//2
         if self.hunger < 25 or 75 < self.hunger:
             if self.hunger < 25:
-                self.energy -= random.randint(5,20)
+                self.energy -= random.randint(5,10)
             elif 75 < self.hunger:
                 self.energy -= random.randint(0,5)
         else:
