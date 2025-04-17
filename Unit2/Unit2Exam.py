@@ -27,7 +27,7 @@ class VirtualPet:
             str: name, species, condition, happiness, hunger, energy, price
         """
         self.check_stats()
-        return f"Name: {self.name}\nSpecies: {self.species}\nGender: {self.gender}\nCondition: {self.condition_status()}%\nHappiness: {self.status(self.happiness,1)}{self.happiness}\nHunger: {self.status(self.hunger,2)}{self.hunger}\nEnergy: {self.status(self.energy,3)}{self.energy}\nPrice: ${self.price_status():0.2f}"
+        return f"Name: {self.name}\nSpecies: {self.species}\nGender: {self.gender}\nCondition: {self.condition_status()}%\nHappiness: {self.status(self.happiness,1)}\nHunger: {self.status(self.hunger,2)}\nEnergy: {self.status(self.energy,3)}\nPrice: ${self.price_status():0.2f}"
     def __add__(self,other):
         """Overrides adding for VirtualPet class
 
@@ -187,6 +187,9 @@ class Fish(VirtualPet):
                 self.energy -= random.randint(1*play_input,5*play_input)
 class Hamster(VirtualPet):
     species = "hamster"
+    happiness = random.randint(65,100)
+    hunger = random.randint(85,100)
+    energy = random.randint(75,hunger)
 
 def gender():
     random_gender = random.randint(1,2)
@@ -220,21 +223,38 @@ def name(gender):
     "Ivy", "Raven", "Stormy", "Peach", "Amber", "Callie", "Delilah", "Gypsy", "Noodle", "Kona"
 ]
     if gender == "male":
-        return male_pet_names[random.randint(0,100)]
+        return male_pet_names[random.randint(0,99)]
     else:
-        return female_pet_names[random.randint(0,100)]
+        return female_pet_names[random.randint(0,99)]
 def species():
     pet_list = [Dog,Cat,Fish,Hamster]
     return pet_list[random.randint(0,3)]
+def generate_pet_id():
+    global code_list
+    digits_list = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','1','2','3','4','5','6','7','8','9','0']
+    check_duplicates = True
+    while check_duplicates:
+        code_generator = ""
+        for i in range(10):
+            code_generator += digits_list[random.randint(30,35)]
+        if code_generator not in code_list:
+            code_list.append(code_generator)
+            check_duplicates = False
+            return
+        else:
+            continue
+def display_pet_id():
+    pass
+
 def main():
+    global code_list
+    code_list = {}
     price_min = 10
     price_max = 100
     initial_price = random.randint(price_min,price_max)
     random_gender = gender()
-    dog_pet1 = species()(random_gender,name(random_gender),initial_price)
-    print(dog_pet1)
-    cat_pet2 = Cat()
-    fish_pet3 = Fish()
-    hamster_pet4 = Hamster()
+    generate_pet_id()
+    code_list[0] = species()(random_gender,name(random_gender),initial_price)
+    print(code_list[0])
 if __name__ == main():
     main()
