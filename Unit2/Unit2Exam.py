@@ -177,9 +177,9 @@ class Dog(VirtualPet):
         VirtualPet (class): main class for virtual pet
     """
     species = "dog"
-    happiness = random.randint(75,125)
-    hunger = random.randint(30,75)
-    energy = random.randint(hunger,100)
+    happiness = random.randint(45,150)
+    hunger = random.randint(26,75)
+    energy = random.randint(hunger,150)
 class Cat(VirtualPet):
     """class Cat inherits from VirtualPet
 
@@ -187,9 +187,9 @@ class Cat(VirtualPet):
         VirtualPet (class): main class for virtual pet
     """
     species = "cat"
-    happiness = random.randint(75,125)
-    hunger = random.randint(50,100)
-    energy = random.randint(30,hunger)
+    happiness = random.randint(30,150)
+    hunger = random.randint(35,150)
+    energy = random.randint(26,hunger)
 class Fish(VirtualPet):
     """class Fish inherits from VirtualPet
 
@@ -197,9 +197,9 @@ class Fish(VirtualPet):
         VirtualPet (class): main class for virtual pet
     """
     species = "fish"
-    happiness = random.randint(50,95)
-    hunger = random.randint(65,100)
-    energy = random.randint(50,hunger)
+    happiness = random.randint(26,100)
+    hunger = random.randint(50,125)
+    energy = random.randint(30,hunger)
     def play(self):
         """overrides play method because fish dont like to be played with
         """
@@ -219,9 +219,9 @@ class Hamster(VirtualPet):
         VirtualPet (class): main class for virtual pet
     """
     species = "hamster"
-    happiness = random.randint(65,100)
-    hunger = random.randint(85,100)
-    energy = random.randint(75,125)
+    happiness = random.randint(26,150)
+    hunger = random.randint(35,125)
+    energy = random.randint(50,125)
 
 def gender():
     random_gender = random.randint(1,2)
