@@ -70,7 +70,7 @@ class VirtualPet:
         Returns:
             float: the updated amount in __price
         """
-        return self.__price*amount
+        return self.__price+amount
     def price_status(self):
         """Returns updated condition of pet
 
@@ -229,8 +229,12 @@ def gender():
         return "male"
     else:
         return "female"
-def name(gender):
-    global name_list
+def name(gender,name_list):
+    """generates a random name depending on gender of pet
+
+    Args:
+        gender (str): either male or female, changes names
+    """
     male_pet_names = [
     "Max", "Charlie", "Cooper", "Buddy", "Rocky", "Teddy", "Milo", "Leo", "Jack", "Toby",
     "Bear", "Duke", "Oliver", "Jake", "Zeus", "Louie", "Finn", "Oscar", "Sam", "Murphy",
@@ -258,17 +262,21 @@ def name(gender):
     if gender == "male":
         male_name = random.randint(0,99)
         name_list.append(male_pet_names[male_name])
-        return male_pet_names[male_name]
     else:
         female_name = random.randint(0,99)
         name_list.append(female_pet_names[female_name])
-        return female_pet_names[female_name]
+    return name_list
 def species():
+    """randomizes a species for pet
+
+    Returns:
+        class: either Dog, Cat, Fish, or Hamster
+    """
     pet_list = [Dog,Cat,Fish,Hamster]
     return pet_list[random.randint(0,3)]
-def generate_pet_id():
-    global code_list
-    global name_list
+def generate_pet_id(code_list):
+    """generates a unique ID for referrence whenever new pet is created
+    """
     digits_list = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','1','2','3','4','5','6','7','8','9','0']
     check_duplicates = True
     while check_duplicates:
@@ -278,27 +286,27 @@ def generate_pet_id():
         if code_generator not in code_list:
             code_list.append(code_generator)
             check_duplicates = False
-            return
+            return code_list
         else:
             continue
-def display_pet_id():
-    global code_list
-    global name_list
+def display_pet_id(code_list,name_list):
+    """debug tool to display pet IDs
+    """
     for i in range(len(name_list)):
         print(f"Pet ID: {code_list[i]}, Pet Name: {name_list[i]}")
 
 def main():
-    global code_list
-    global name_list
+    """main
+    """
     code_list = []
     name_list = []
-    price_min = 10
-    price_max = 100
-    initial_price = random.randint(price_min,price_max)
+    price_list = [10,50]
+    price = random.randint(price_list[0],price_list[1])
     random_gender = gender()
-    random_name = name(random_gender)
-    generate_pet_id()
-    code_list[0] = species()(random_gender,random_name,initial_price)
+    name_list = name(random_gender,name_list)
+    code_list = generate_pet_id(code_list)
+    code_list[0] = species()(random_gender,name_list[-1],price)
+    print(price)
     print(code_list[0])
-if __name__ == main():
+if __name__ == "__main__":
     main()
