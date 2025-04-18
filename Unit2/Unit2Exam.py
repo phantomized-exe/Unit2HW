@@ -1,11 +1,13 @@
 import random
 class VirtualPet:
-    def __init__(self,gender=str,name=str,price=float,condition=random.randint(75,125),happiness=random.randint(75,125),hunger=random.randint(75,125),energy=random.randint(75,125),days_starving=0):
+    def __init__(self,gender=str,name=str,price=float,owned=False,condition=random.randint(75,125),happiness=random.randint(75,125),hunger=random.randint(75,125),energy=random.randint(75,125),days_starving=0):
         """Initializes class VirtualPet
 
         Args:
+            gender (str, optional): gender of pet. Defaults to str.
             name (str, optional): name of pet. Defaults to str.
-            price (float, optional): cprice of pet. Defaults to float.
+            price (float, optional): price of pet. Defaults to float.
+            owned (str, optional): if the pet is owned or not
             condition (float, optional): condition of pet. Defaults to 100.00.
             gender (str, optional): gender of pet. Defaults to str.
             happiness (int, optional): happiness of pet. Defaults to 100.
@@ -14,6 +16,7 @@ class VirtualPet:
         """
         self.gender = gender
         self.name = name
+        self.owned = owned
         self.condition = condition
         self.happiness = happiness
         self.hunger = hunger
@@ -311,7 +314,7 @@ def display_pet_names(code_list,name_list):
             num_pets += f"{i+1}"
         else:
             num_pets += f"/{i+1}"
-        print(f"{i+1}. {name_list[i]} ({code_list[i].gender} {code_list[i].species})")
+        print(f"{i+1}. {name_list[i]} ({code_list[i].species})")
     name_choice = int(input(f"({num_pets}) "))
     print()
     return name_choice-1
@@ -324,12 +327,19 @@ def generate_pet(code_list,name_list,num_pets):
         code_list[i] = species()(random_gender,name_list[-1],rand_price)
         print(code_list[i])
     return code_list, name_list
+def pet_choices(current_pet,code_list):
+    if code_list[current_pet].owned:
+        print("pass")
+    else:
+        print("fail")
 def main():
     """main
     """
     code_list = []
     name_list = []
     generate_pet(code_list,name_list,5)
-    print(code_list[display_pet_names(code_list,name_list)])
+    current_pet = display_pet_names(code_list,name_list)
+    print(code_list[current_pet])
+    pet_choices(current_pet,code_list)
 if __name__ == "__main__":
     main()
