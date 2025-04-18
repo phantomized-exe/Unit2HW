@@ -27,7 +27,7 @@ class VirtualPet:
             str: name, species, condition, happiness, hunger, energy, price
         """
         self.check_stats()
-        return f"Name: {self.name}\nSpecies: {self.species}\nGender: {self.gender}\nCondition: {self.condition_status()}%\nHappiness: {self.status(self.happiness,1)}\nHunger: {self.status(self.hunger,2)}\nEnergy: {self.status(self.energy,3)}\nPrice: ${self.price_status():0.2f}"
+        return f"Name: {self.name}\nSpecies: {self.species}\nGender: {self.gender}\nCondition: {self.condition_status()}%\nHappiness: {self.status(self.happiness,1)}\nHunger: {self.status(self.hunger,2)}\nEnergy: {self.status(self.energy,3)}\nPrice: ${self.price_status():0.2f}\n"
     def __add__(self,other):
         """Overrides adding for VirtualPet class
 
@@ -197,8 +197,8 @@ class Fish(VirtualPet):
         VirtualPet (class): main class for virtual pet
     """
     species = "fish"
-    happiness = random.randint(50,100)
-    hunger = random.randint(75,125)
+    happiness = random.randint(50,95)
+    hunger = random.randint(65,100)
     energy = random.randint(50,hunger)
     def play(self):
         """overrides play method because fish dont like to be played with
@@ -221,7 +221,7 @@ class Hamster(VirtualPet):
     species = "hamster"
     happiness = random.randint(65,100)
     hunger = random.randint(85,100)
-    energy = random.randint(75,hunger)
+    energy = random.randint(75,125)
 
 def gender():
     random_gender = random.randint(1,2)
@@ -294,19 +294,42 @@ def display_pet_id(code_list,name_list):
     """
     for i in range(len(name_list)):
         print(f"Pet ID: {code_list[i]}, Pet Name: {name_list[i]}")
+def display_pet_names(code_list,name_list):
+    """displays pet names and lets user select specific pet
 
+    Args:
+        code_list (list): list of generated codes
+        name_list (list): list of generated names
+
+    Returns:
+        int: retruns user's choice of pet
+    """
+    num_pets = ""
+    print("Select Pet:")
+    for i in range(len(name_list)):
+        if num_pets == "":
+            num_pets += f"{i+1}"
+        else:
+            num_pets += f"/{i+1}"
+        print(f"{i+1}. {name_list[i]} ({code_list[i].gender} {code_list[i].species})")
+    name_choice = int(input(f"({num_pets}) "))
+    print()
+    return name_choice-1
+def generate_pet(code_list,name_list,num_pets):
+    for i in range(num_pets):
+        rand_price = random.randint(10,50)
+        random_gender = gender()
+        name_list = name(random_gender,name_list)
+        code_list = generate_pet_id(code_list)
+        code_list[i] = species()(random_gender,name_list[-1],rand_price)
+        print(code_list[i])
+    return code_list, name_list
 def main():
     """main
     """
     code_list = []
     name_list = []
-    price_list = [10,50]
-    price = random.randint(price_list[0],price_list[1])
-    random_gender = gender()
-    name_list = name(random_gender,name_list)
-    code_list = generate_pet_id(code_list)
-    code_list[0] = species()(random_gender,name_list[-1],price)
-    print(price)
-    print(code_list[0])
+    generate_pet(code_list,name_list,5)
+    print(code_list[display_pet_names(code_list,name_list)])
 if __name__ == "__main__":
     main()
