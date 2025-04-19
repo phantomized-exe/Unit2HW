@@ -1,6 +1,6 @@
 import random
 class VirtualPet:
-    def __init__(self,gender=str,name=str,price=float,owned=False,condition=random.randint(75,125),happiness=random.randint(75,125),hunger=random.randint(75,125),energy=random.randint(75,125),days_starving=0):
+    def __init__(self,gender=str,name=str,price=float,owned=True,condition=random.randint(75,125),happiness=random.randint(75,125),hunger=random.randint(75,125),energy=random.randint(75,125),days_starving=0):
         """Initializes class VirtualPet
 
         Args:
@@ -30,7 +30,7 @@ class VirtualPet:
             str: name, species, condition, happiness, hunger, energy, price
         """
         self.check_stats()
-        return f"Name: {self.name}\nSpecies: {self.species}\nGender: {self.gender}\nCondition: {self.condition_status()}%\nHappiness: {self.status(self.happiness,1)}\nHunger: {self.status(self.hunger,2)}\nEnergy: {self.status(self.energy,3)}\nPrice: ${self.price_status():0.2f}\n"
+        return f"Name: {self.name}\nSpecies: {self.species}\nGender: {self.gender}\nCondition: {self.condition_status()}%\nHappiness: {self.status(self.happiness,1)}\nHunger: {self.status(self.hunger,2)}\nEnergy: {self.status(self.energy,3)}\nPrice: ${self.price_status():0.2f}"
     def __add__(self,other):
         """Overrides adding for VirtualPet class
 
@@ -136,38 +136,38 @@ class VirtualPet:
     def play(self):
         """play increases happiness and decreases energy and food
         """
+        print()
         play_input = int(input(f"How hard do you want to play with {self.name}?\n1. Gentle\n2. Normal\n3. Hard\n(1/2/3) "))
         self.happiness += random.randint(1*play_input,10*play_input)
         self.energy -= random.randint(1*play_input,5*play_input)
         self.hunger -= 1*play_input
-    def eat(self):
+    def eat(self,money):
         """eat increases all stats but costs money. you can also starve your pet
         """
-        food_list = [0,random.randint(1,5),random.randint(5,10),random.randint(10,15)]
-        eat_input = int(input(f"How much do you want to feed {self.name}?\n1. Nothing\n2. A little: ${food_list[0]}\n3. Normal: ${food_list[1]}\n4. A lot: ${food_list[2]}\n(1/2/3/4) "))
+        food_list = [random.randint(1,5),random.randint(5,10),random.randint(10,20)]
+        print()
+        eat_input = int(input(f"How much do you want to feed {self.name}? (You have ${money:.2f})\n1. Nothing\n2. A little: ${food_list[0]}\n3. Normal: ${food_list[1]}\n4. A lot: ${food_list[2]}\n(1/2/3/4) "))
         if eat_input != 1:
             if self.species == "cat":
                 if random.randint(1,2+eat_input) == 1:
                     print(f"{self.name} turns their nose up at the food and won't eat it")
                     self.days_starving += 1
+                    money -= food_list[eat_input-2]
                     self.happiness -= self.days_starving*5
                     self.energy -= self.days_starving*5
-                else:
-                    self.days_starving = 0
-                    self.hunger += random.randint(eat_input,food_list[eat_input-1])
-                    self.energy += random.randint(1,food_list[eat_input-1]//1.5)
-                    self.happiness += eat_input*random.randint(0,food_list[eat_input-1])//2
+                    return money
+            self.days_starving = 0
+            money -= food_list[eat_input-2]
+            self.hunger += random.randint(eat_input,food_list[eat_input-2])
+            self.energy += random.randint(1,food_list[eat_input-2])
+            self.happiness += eat_input*random.randint(0,food_list[eat_input-2])
         else:
             self.days_starving += 1
             self.happiness -= self.days_starving*5
             self.energy -= self.days_starving*5
-        if self.hunger < 25 or 75 < self.hunger:
-            if self.hunger < 25:
-                self.energy -= random.randint(5,10)
-            elif 75 < self.hunger:
-                self.energy -= random.randint(0,5)
-        else:
-            self.energy += random.randint(1*eat_input,5*eat_input)
+        if self.hunger < 25:
+            self.energy -= random.randint(0,self.hunger//2)
+        return money
     def change_name(self):
         """changes name of pet
         """
@@ -316,7 +316,6 @@ def display_pet_names(code_list,name_list):
             num_pets += f"/{i+1}"
         print(f"{i+1}. {name_list[i]} ({code_list[i].species})")
     name_choice = int(input(f"({num_pets}) "))
-    print()
     return name_choice-1
 def generate_pet(code_list,name_list,num_pets):
     for i in range(num_pets):
@@ -325,21 +324,46 @@ def generate_pet(code_list,name_list,num_pets):
         name_list = name(random_gender,name_list)
         code_list = generate_pet_id(code_list)
         code_list[i] = species()(random_gender,name_list[-1],rand_price)
-        print(code_list[i])
     return code_list, name_list
-def pet_choices(current_pet,code_list):
+def pet_choices(current_pet,code_list,money):
+    num_choices = ""
+    pet_choice_list = []
+    print()
+    print(f"You have ${money:.2f}")
+    if code_list[current_pet].get_price() < money and code_list[current_pet] == False:
+        pet_choice_list.append("Buy pet")
     if code_list[current_pet].owned:
-        print("pass")
-    else:
-        print("fail")
+        pet_choice_list.append("Sell pet")
+        pet_choice_list.append("Play with pet")
+        pet_choice_list.append("Feed pet")
+    pet_choice_list.append("Back")
+    for i in range(len(pet_choice_list)):
+        if num_choices == "":
+            num_choices += f"{i+1}"
+        else:
+            num_choices += f"/{i+1}"
+        print(f"{i+1}. {pet_choice_list[i]}")
+    pet_choice = int(input(f"({num_choices}) "))
+    if pet_choice == 1 and code_list[current_pet].get_price() < money:
+        money -= code_list[current_pet].get_price()
+        code_list[current_pet].owned = True
+    elif pet_choice == 1 and code_list[current_pet].owned:
+        money += code_list[current_pet].get_price()
+        code_list[current_pet].owned = False
+    elif pet_choice == 2:
+        code_list[current_pet].play()
+    elif pet_choice == 3:
+        money = code_list[current_pet].eat(money)
+
 def main():
     """main
     """
+    money = 100
     code_list = []
     name_list = []
     generate_pet(code_list,name_list,5)
     current_pet = display_pet_names(code_list,name_list)
     print(code_list[current_pet])
-    pet_choices(current_pet,code_list)
+    pet_choices(current_pet,code_list,money)
 if __name__ == "__main__":
     main()
