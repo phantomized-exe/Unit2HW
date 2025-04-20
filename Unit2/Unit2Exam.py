@@ -342,7 +342,8 @@ def generate_pet(code_list,name_list,num_pets,owned=False):
         code_id = generate_pet_id(code_list)
         code_list.append(code_id)
         code_id = species()(random_gender,name_list[-1],rand_price)
-        print(code_id)
+        #print(code_id)
+        #print(code_list[i])
         if owned:
             code_id.owned = True
     return code_list, name_list
@@ -420,11 +421,11 @@ def main():
     code_list = []
     name_list = []
     generate_pet(code_list,name_list,4)
-    generate_pet(code_list,name_list,4,True)
+    generate_pet(code_list,name_list,1,True)
     print(code_list)
-    #hub_choices(day,code_list)
-    #current_pet = display_pet_names(code_list,name_list)
-    #print(code_list[current_pet])
-    #pet_choices(current_pet,code_list,money)
+    hub_choices(day,code_list)
+    current_pet = display_pet_names(code_list,name_list)
+    print(code_list[current_pet])
+    pet_choices(current_pet,code_list,money)
 if __name__ == "__main__":
     main()
