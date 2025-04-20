@@ -284,21 +284,6 @@ def species():
     """
     pet_list = [Dog,Cat,Fish,Hamster]
     return pet_list[random.randint(0,3)]
-def generate_pet_id(code_list):
-    """generates a unique ID for referrence whenever new pet is created
-    """
-    digits_list = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','1','2','3','4','5','6','7','8','9','0']
-    check_duplicates = True
-    while check_duplicates:
-        code_generator = ""
-        for i in range(10):
-            code_generator += digits_list[random.randint(30,35)]
-        if code_generator not in code_list:
-            code_list.append(code_generator)
-            check_duplicates = False
-            return code_list
-        else:
-            continue
 def display_pet_id(code_list,name_list):
     """debug tool to display pet IDs
     """
@@ -325,6 +310,19 @@ def display_pet_names(code_list,name_list):
         print(f"{i+1}. {name_list[i]} ({code_list[i].species})")
     name_choice = int(input(f"({num_pets}) "))
     return name_choice-1
+def generate_pet_id(code_list):
+    """generates a unique ID for reference whenever new pet is created
+    """
+    digits_list = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','1','2','3','4','5','6','7','8','9','0']
+    check_duplicates = True
+    while check_duplicates:
+        code_generator = ""
+        for i in range(10):
+            code_generator += digits_list[random.randint(30,35)]
+        if code_generator not in code_list:
+            return code_generator
+        else:
+            continue
 def generate_pet(code_list,name_list,num_pets,owned=False):
     """generates a pet from VirtualPet class
 
@@ -341,10 +339,12 @@ def generate_pet(code_list,name_list,num_pets,owned=False):
         rand_price = random.randint(10,50)
         random_gender = gender()
         name_list = name(random_gender,name_list)
-        code_list = generate_pet_id(code_list)
-        code_list[i] = species()(random_gender,name_list[-1],rand_price)
+        code_id = generate_pet_id(code_list)
+        code_list.append(code_id)
+        code_id = species()(random_gender,name_list[-1],rand_price)
+        print(code_id)
         if owned:
-            code_list[i].owned = True
+            code_id.owned = True
     return code_list, name_list
 def pet_choices(current_pet,code_list,money):
     """Choices for individual pets
@@ -383,7 +383,7 @@ def pet_choices(current_pet,code_list,money):
     elif pet_choice == 3:
         money = code_list[current_pet].eat(money)
 def hub_choices(day,code_list):
-    num_list = 1
+    num_list = 0
     num_choices = ""
     pet_owned = False
     print()
@@ -416,14 +416,15 @@ def main():
     """main
     """
     money = 100
-    day = 0
+    day = 1
     code_list = []
     name_list = []
     generate_pet(code_list,name_list,4)
     generate_pet(code_list,name_list,4,True)
-    hub_choices(day,code_list)
-    current_pet = display_pet_names(code_list,name_list)
-    print(code_list[current_pet])
-    pet_choices(current_pet,code_list,money)
+    print(code_list)
+    #hub_choices(day,code_list)
+    #current_pet = display_pet_names(code_list,name_list)
+    #print(code_list[current_pet])
+    #pet_choices(current_pet,code_list,money)
 if __name__ == "__main__":
     main()
