@@ -1,6 +1,6 @@
 import random
 class VirtualPet:
-    def __init__(self,gender=str,name=str,price=float,owned=True,condition=random.randint(75,125),happiness=random.randint(75,125),hunger=random.randint(75,125),energy=random.randint(75,125),days_starving=0):
+    def __init__(self,gender=str,name=str,price=float,owned=False,condition=random.randint(75,125),happiness=random.randint(75,125),hunger=random.randint(75,125),energy=random.randint(75,125),days_starving=0):
         """Initializes class VirtualPet
 
         Args:
@@ -29,6 +29,7 @@ class VirtualPet:
         Returns:
             str: name, species, condition, happiness, hunger, energy, price
         """
+        print()
         self.check_stats()
         return f"Name: {self.name}\nSpecies: {self.species}\nGender: {self.gender}\nCondition: {self.condition_status()}%\nHappiness: {self.status(self.happiness,1)}\nHunger: {self.status(self.hunger,2)}\nEnergy: {self.status(self.energy,3)}\nPrice: ${self.price_status():0.2f}"
     def __add__(self,other):
@@ -264,10 +265,16 @@ def name(gender,name_list):
 ]
     if gender == "male":
         male_name = random.randint(0,99)
-        name_list.append(male_pet_names[male_name])
+        if male_name in name_list:
+            pass
+        else:
+            name_list.append(male_pet_names[male_name])
     else:
         female_name = random.randint(0,99)
-        name_list.append(female_pet_names[female_name])
+        if female_name in name_list:
+            pass
+        else:
+            name_list.append(female_pet_names[female_name])
     return name_list
 def species():
     """randomizes a species for pet
