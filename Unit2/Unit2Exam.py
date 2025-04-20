@@ -315,6 +315,7 @@ def display_pet_names(code_list,name_list):
         int: retruns user's choice of pet
     """
     num_pets = ""
+    print()
     print("Select Pet:")
     for i in range(len(name_list)):
         if num_pets == "":
@@ -324,15 +325,35 @@ def display_pet_names(code_list,name_list):
         print(f"{i+1}. {name_list[i]} ({code_list[i].species})")
     name_choice = int(input(f"({num_pets}) "))
     return name_choice-1
-def generate_pet(code_list,name_list,num_pets):
+def generate_pet(code_list,name_list,num_pets,owned=False):
+    """generates a pet from VirtualPet class
+
+    Args:
+        code_list (list): stores the codes for generated pets
+        name_list (liat): stores the names of generated pets
+        num_pets (int): the number of pets to be generated
+        owned (bool, optional): if the pet is owned or not. Defaults to False.
+
+    Returns:
+        list: returns the name, and code of generated pet(s)
+    """
     for i in range(num_pets):
         rand_price = random.randint(10,50)
         random_gender = gender()
         name_list = name(random_gender,name_list)
         code_list = generate_pet_id(code_list)
         code_list[i] = species()(random_gender,name_list[-1],rand_price)
+        if owned:
+            code_list[i].owned = True
     return code_list, name_list
 def pet_choices(current_pet,code_list,money):
+    """Choices for individual pets
+
+    Args:
+        current_pet (int): the choice of pet to pull code from code_list
+        code_list (list): list of all pet codes
+        money (float): user's money to buy, sell, and feed pets
+    """
     num_choices = ""
     pet_choice_list = []
     print()
@@ -361,14 +382,46 @@ def pet_choices(current_pet,code_list,money):
         code_list[current_pet].play()
     elif pet_choice == 3:
         money = code_list[current_pet].eat(money)
-
+def hub_choices(day,code_list):
+    num_list = 1
+    num_choices = ""
+    pet_owned = False
+    print()
+    print(f"Day {day}:")#display owned pets, display buyable pets, next day, stock market?
+    for i in range(len(code_list)):
+        if code_list[i].owned:
+            pet_owned = True
+            num_list += 1
+            if num_choices == "":
+                num_choices += f"{num_list}"
+            else:
+                num_choices += f"/{num_list}"
+            print(f"{num_list}. Owned pets")
+            break
+    for i in range(len(code_list)):
+        if code_list[i].owned==False:
+            num_list += 1
+            if num_choices == "":
+                num_choices += f"{num_list}"
+            else:
+                num_choices += f"/{num_list}"
+            print(f"{num_list}. Pet market")
+            break
+    hub_choice = int(input(f"({num_choices}) "))
+    if hub_choice == 1 and pet_owned:
+        print("shows owned pets")
+    elif hub_choice == 1:
+        print("shows available pets")
 def main():
     """main
     """
     money = 100
+    day = 0
     code_list = []
     name_list = []
-    generate_pet(code_list,name_list,5)
+    generate_pet(code_list,name_list,4)
+    generate_pet(code_list,name_list,4,True)
+    hub_choices(day,code_list)
     current_pet = display_pet_names(code_list,name_list)
     print(code_list[current_pet])
     pet_choices(current_pet,code_list,money)
