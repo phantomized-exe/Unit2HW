@@ -1,6 +1,7 @@
 import random
 class VirtualPet:
-    def __init__(self,id,gender=str,name=str,price=float,owned=False,condition=random.randint(75,125),happiness=random.randint(75,125),hunger=random.randint(75,125),energy=random.randint(75,125),days_starving=0):
+    day = 1
+    def __init__(self,id,gender=str,name=str,price=float,owned=False,condition=random.randint(75,125),happiness=random.randint(75,125),hunger=random.randint(75,125),energy=random.randint(75,125),days_starving=0,days_sad=0):
         """Initializes class VirtualPet
 
         Args:
@@ -25,6 +26,7 @@ class VirtualPet:
         self.energy = energy
         self.__price = price
         self.days_starving = days_starving
+        self.days_sad = days_sad
     def __repr__(self):
         """Returns pet stats when class is printed
 
@@ -83,7 +85,7 @@ class VirtualPet:
         Returns:
             float: from 0 up
         """
-        return self.condition_status()/100*self.get_price()
+        return self.condition_status()/100*self.get_price()*VirtualPet.day
     def status(self,status_num,num_list,
                 happiness_list=['feral','mad','sad','bored','happy','joyful','schizophrenic'],
                 hunger_list=['dying of hunger','starving','hungry','peckish','full','glutted','stomach bursting'],
@@ -140,10 +142,15 @@ class VirtualPet:
         """play increases happiness and decreases energy and food
         """
         print()
-        play_input = int(input(f"How hard do you want to play with {self.name}?\n1. Gentle\n2. Normal\n3. Hard\n(1/2/3) "))
-        self.happiness += random.randint(1*play_input,10*play_input)
-        self.energy -= random.randint(1*play_input,5*play_input)
-        self.hunger -= 1*play_input
+        play_input = int(input(f"How hard do you want to play with {self.name}?\n1. Neglect pet\n2. Gentle\n3. Normal\n4. Hard\n(1/2/3/4) "))
+        if 2 <= play_input <=4:
+            self.happiness += random.randint(1*play_input,10*play_input)
+            self.energy -= random.randint(1*play_input,5*play_input)
+            self.hunger -= 1*play_input
+        else:
+            self.days_sad += 1
+            self.happiness -= self.days_sad*self.days_sad
+            self.energy -= self.days_sad*self.days_sad
     def eat(self,money):
         """eat increases all stats but costs money. you can also starve your pet
         """
@@ -156,8 +163,8 @@ class VirtualPet:
                     print(f"{self.name} turns their nose up at the food and won't eat it")
                     self.days_starving += 1
                     money -= food_list[eat_input-2]
-                    self.happiness -= self.days_starving*5
-                    self.energy -= self.days_starving*5
+                    self.happiness -= self.days_starving*self.days_starving
+                    self.energy -= self.days_starving*self.days_starving
                     return money
             self.days_starving = 0
             money -= food_list[eat_input-2]
@@ -408,7 +415,6 @@ def hub_choices(day,pet_list,name_list,money,owned):
     num_choices = "1"
     pet_owned = False
     pet_available = False
-    not_owned = []
     print()
     print(f"Day {day} (${money:.2f}):")#display owned pets, display buyable pets, next day, stock market?
     for i in range(len(pet_list)):
@@ -430,23 +436,50 @@ def hub_choices(day,pet_list,name_list,money,owned):
     hub_choice = int(input(f"({num_choices}) "))
     if hub_choice == 1 and pet_owned:
         current_pet = display_pet_names(pet_list,name_list,True,day,money)
-        print(pet_list[current_pet])
+        print(day,pet_list[current_pet])
         pet_choices(current_pet,pet_list,money,name_list,day,owned)
     elif hub_choice == 1 and pet_available or hub_choice == 2 and pet_available:
         current_pet = display_pet_names(pet_list,name_list,False,day,money)
         print(pet_list[current_pet])
         pet_choices(current_pet,pet_list,money,name_list,day,owned)
     elif hub_choice == 1 or hub_choice == 2 or hub_choice == 3:
-        day += 1
-        for i in range(len(pet_list)):
-            if not pet_list[i].owned:
-                not_owned.append(i)
-        not_owned.reverse()
-        for i in range(len(not_owned)):
-            pet_list.remove(pet_list[not_owned[i]])
-            name_list.remove(name_list[not_owned[i]])
-        generate_pet(pet_list,name_list,random.randint(1,10))
-        hub_choices(day,pet_list,name_list,money,owned)
+        next_day(day,owned,pet_list,name_list,money)
+def next_day(day,owned,pet_list,name_list,money):
+    not_owned = []
+    day += 1
+    VirtualPet.day += 1
+    for i in range(len(pet_list)):
+        if not pet_list[i].owned:
+            not_owned.append(i)
+    decrease_stats(pet_list,name_list)
+    not_owned.reverse()
+    for i in range(len(not_owned)):
+        pet_list.remove(pet_list[not_owned[i]])
+        name_list.remove(name_list[not_owned[i]])
+    generate_pet(pet_list,name_list,random.randint(1,10))
+    hub_choices(day,pet_list,name_list,money,owned)
+def decrease_stats(pet_list,name_list):
+    num_owned = []
+    for i in range(len(pet_list)):
+        if pet_list[i].owned:
+            num_owned.append(i)
+    for i in range(len(num_owned)):
+        if pet_list[i].species == Dog:
+            pet_list[i].happiness -= random.randint(pet_list[i].days_sad*2+1,(pet_list[i].days_sad*2+1)*(150-pet_list[i].energy)+pet_list[i].days_sad*2+1)
+        else:
+            pet_list[i].happiness -= random.randint(pet_list[i].days_sad+1,(pet_list[i].days_sad+1)*(150-pet_list[i].energy)+pet_list[i].days_sad+1)
+        if pet_list[i].species == Fish or pet_list[i].species == Hamster:
+            pet_list[i].hunger -= random.randint(pet_list[i].days_starving*2+1,(pet_list[i].days_starving+1)*(150-pet_list[i].energy)/2+pet_list[i].days_starving*2+1)
+        else:
+            pet_list[i].hunger -= random.randint(pet_list[i].days_starving+1,(pet_list[i].days_starving+1)*(150-pet_list[i].energy)+pet_list[i].days_starving+1)
+        if pet_list[i].species == Cat:
+            pet_list[i].energy -= random.randint(pet_list[i].energy//10,(pet_list[i].days_sad*2+1)*(pet_list[i].days_starving*2+1)+pet_list[i].energy//10)
+        else:
+            pet_list[i].energy -= random.randint(pet_list[i].energy//15,(pet_list[i].days_sad+1)*(pet_list[i].days_starving+1)+pet_list[i].energy//15)
+        if pet_list[i].condition_status() == 0:
+            print(f"{pet_list[i].name} has perished!")
+            pet_list.remove(pet_list[i])
+            name_list.remove(pet_list[i].name)
 def main():
     """main
     """
@@ -456,8 +489,7 @@ def main():
     name_list = []
     owned = False
     generate_pet(pet_list,name_list,random.randint(1,5))
-    generate_pet(pet_list,name_list,1,True)
-    print(pet_list)
+    #generate_pet(pet_list,name_list,1,True)
     hub_choices(day,pet_list,name_list,money,owned)
 if __name__ == "__main__":
     main()

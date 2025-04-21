@@ -1,0 +1,3 @@
+In Python, you can create classes
+In Python, you can create anything you want
+In Python, you can change almost any variable
