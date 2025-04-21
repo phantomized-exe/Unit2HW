@@ -1,9 +1,10 @@
 import random
 class VirtualPet:
-    def __init__(self,gender=str,name=str,price=float,owned=False,condition=random.randint(75,125),happiness=random.randint(75,125),hunger=random.randint(75,125),energy=random.randint(75,125),days_starving=0):
+    def __init__(self,id,gender=str,name=str,price=float,owned=False,condition=random.randint(75,125),happiness=random.randint(75,125),hunger=random.randint(75,125),energy=random.randint(75,125),days_starving=0):
         """Initializes class VirtualPet
 
         Args:
+            id (str): unique id of pet
             gender (str, optional): gender of pet. Defaults to str.
             name (str, optional): name of pet. Defaults to str.
             price (float, optional): price of pet. Defaults to float.
@@ -14,6 +15,7 @@ class VirtualPet:
             hunger (int, optional): hunger of pet. Defaults to 100.
             energy (int, optional): energy of pet. Defaults to 100.
         """
+        self.id = id
         self.gender = gender
         self.name = name
         self.owned = owned
@@ -31,7 +33,7 @@ class VirtualPet:
         """
         print()
         self.check_stats()
-        return f"Name: {self.name}\nSpecies: {self.species}\nGender: {self.gender}\nCondition: {self.condition_status()}%\nHappiness: {self.status(self.happiness,1)}\nHunger: {self.status(self.hunger,2)}\nEnergy: {self.status(self.energy,3)}\nPrice: ${self.price_status():0.2f}"
+        return f"Name: {self.name}\nSpecies: {self.species}\nGender: {self.gender}\nCondition: {self.condition_status()}%\nOwned: {self.owned}\nHappiness: {self.status(self.happiness,1)}\nHunger: {self.status(self.hunger,2)}\nEnergy: {self.status(self.energy,3)}\nPrice: ${self.price_status():0.2f}"
     def __add__(self,other):
         """Overrides adding for VirtualPet class
 
@@ -284,12 +286,12 @@ def species():
     """
     pet_list = [Dog,Cat,Fish,Hamster]
     return pet_list[random.randint(0,3)]
-def display_pet_id(code_list,name_list):
+def display_pet_id(pet_list,name_list):
     """debug tool to display pet IDs
     """
     for i in range(len(name_list)):
-        print(f"Pet ID: {code_list[i]}, Pet Name: {name_list[i]}")
-def display_pet_names(code_list,name_list):
+        print(f"Pet ID: {pet_list[i]}, Pet Name: {name_list[i]}")
+def display_pet_names(pet_list,name_list):
     """displays pet names and lets user select specific pet
 
     Args:
@@ -307,10 +309,10 @@ def display_pet_names(code_list,name_list):
             num_pets += f"{i+1}"
         else:
             num_pets += f"/{i+1}"
-        print(f"{i+1}. {name_list[i]} ({code_list[i].species})")
+        print(f"{i+1}. {name_list[i]} ({pet_list[i].species})")
     name_choice = int(input(f"({num_pets}) "))
     return name_choice-1
-def generate_pet_id(code_list):
+def generate_pet_id(pet_list):
     """generates a unique ID for reference whenever new pet is created
     """
     digits_list = ['a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z','1','2','3','4','5','6','7','8','9','0']
@@ -319,11 +321,11 @@ def generate_pet_id(code_list):
         code_generator = ""
         for i in range(10):
             code_generator += digits_list[random.randint(30,35)]
-        if code_generator not in code_list:
+        if code_generator not in pet_list:
             return code_generator
         else:
             continue
-def generate_pet(code_list,name_list,num_pets,owned=False):
+def generate_pet(pet_list,name_list,num_pets,owned=False):
     """generates a pet from VirtualPet class
 
     Args:
@@ -339,15 +341,13 @@ def generate_pet(code_list,name_list,num_pets,owned=False):
         rand_price = random.randint(10,50)
         random_gender = gender()
         name_list = name(random_gender,name_list)
-        code_id = generate_pet_id(code_list)
-        code_list.append(code_id)
-        code_id = species()(random_gender,name_list[-1],rand_price)
-        #print(code_id)
-        #print(code_list[i])
+        code_id = generate_pet_id(pet_list)
+        pet = species()(code_id,random_gender,name_list[-1],rand_price)
         if owned:
-            code_id.owned = True
-    return code_list, name_list
-def pet_choices(current_pet,code_list,money):
+            pet.owned = True
+        pet_list.append(pet)
+    return pet_list, name_list
+def pet_choices(current_pet,pet_list,money):
     """Choices for individual pets
 
     Args:
@@ -359,9 +359,9 @@ def pet_choices(current_pet,code_list,money):
     pet_choice_list = []
     print()
     print(f"You have ${money:.2f}")
-    if code_list[current_pet].get_price() < money and code_list[current_pet] == False:
+    if pet_list[current_pet].get_price() < money and pet_list[current_pet] == False:
         pet_choice_list.append("Buy pet")
-    if code_list[current_pet].owned:
+    if pet_list[current_pet].owned:
         pet_choice_list.append("Sell pet")
         pet_choice_list.append("Play with pet")
         pet_choice_list.append("Feed pet")
@@ -373,59 +373,59 @@ def pet_choices(current_pet,code_list,money):
             num_choices += f"/{i+1}"
         print(f"{i+1}. {pet_choice_list[i]}")
     pet_choice = int(input(f"({num_choices}) "))
-    if pet_choice == 1 and code_list[current_pet].get_price() < money:
-        money -= code_list[current_pet].get_price()
-        code_list[current_pet].owned = True
-    elif pet_choice == 1 and code_list[current_pet].owned:
-        money += code_list[current_pet].get_price()
-        code_list[current_pet].owned = False
+    if pet_choice == 1 and pet_list[current_pet].get_price() < money:
+        money -= pet_list[current_pet].get_price()
+        pet_list[current_pet].owned = True
+    elif pet_choice == 1 and pet_list[current_pet].owned:
+        money += pet_list[current_pet].get_price()
+        pet_list[current_pet].owned = False
     elif pet_choice == 2:
-        code_list[current_pet].play()
+        pet_list[current_pet].play()
     elif pet_choice == 3:
-        money = code_list[current_pet].eat(money)
-def hub_choices(day,code_list):
+        money = pet_list[current_pet].eat(money)
+def hub_choices(day,pet_list):
     num_list = 0
-    num_choices = ""
+    num_choices = "1"
     pet_owned = False
+    pet_owned = 0
+    pet_available = 0
     print()
     print(f"Day {day}:")#display owned pets, display buyable pets, next day, stock market?
-    for i in range(len(code_list)):
-        if code_list[i].owned:
-            pet_owned = True
+    for i in range(len(pet_list)):
+        if pet_list[i].owned:
             num_list += 1
-            if num_choices == "":
-                num_choices += f"{num_list}"
-            else:
-                num_choices += f"/{num_list}"
+            pet_owned = num_list
+            num_choices += f"/{num_list+1}"
             print(f"{num_list}. Owned pets")
             break
-    for i in range(len(code_list)):
-        if code_list[i].owned==False:
+    for i in range(len(pet_list)):
+        if pet_list[i].owned==False:
             num_list += 1
-            if num_choices == "":
-                num_choices += f"{num_list}"
-            else:
-                num_choices += f"/{num_list}"
+            pet_available = num_list
+            num_choices += f"/{num_list+1}"
             print(f"{num_list}. Pet market")
             break
+    num_list += 1
+    print(f"{num_list}. Next day")
     hub_choice = int(input(f"({num_choices}) "))
-    if hub_choice == 1 and pet_owned:
+    if hub_choice == 1 and pet_owned == 1:
         print("shows owned pets")
-    elif hub_choice == 1:
+    elif hub_choice == 1 and pet_available == 1 or hub_choice == 2 and pet_available == 2:
         print("shows available pets")
+    elif hub_choice == 1 or hub_choice == 2 or hub_choice == 3:
+        print("next day")
 def main():
     """main
     """
     money = 100
     day = 1
-    code_list = []
+    pet_list = []
     name_list = []
-    generate_pet(code_list,name_list,4)
-    generate_pet(code_list,name_list,1,True)
-    print(code_list)
-    hub_choices(day,code_list)
-    current_pet = display_pet_names(code_list,name_list)
-    print(code_list[current_pet])
-    pet_choices(current_pet,code_list,money)
+    generate_pet(pet_list,name_list,4)
+    generate_pet(pet_list,name_list,1,True)
+    hub_choices(day,pet_list)
+    #current_pet = display_pet_names(pet_list,name_list)
+    #print(pet_list[current_pet])
+    #pet_choices(current_pet,pet_list,money)
 if __name__ == "__main__":
     main()
