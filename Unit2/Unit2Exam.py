@@ -142,7 +142,7 @@ class VirtualPet:
         """play increases happiness and decreases energy and food
         """
         print()
-        play_input = int(input(f"How hard do you want to play with {self.name}?\n1. Neglect pet\n2. Gentle\n3. Normal\n4. Hard\n(1/2/3/4) "))
+        play_input = int(input(f"How hard do you want to play with {self.name}?\n1. Neglect\n2. Gentle\n3. Normal\n4. Hard\n(1/2/3/4) "))
         if 2 <= play_input <=4:
             self.happiness += random.randint(1*play_input,10*play_input)
             self.energy -= random.randint(1*play_input,5*play_input)
@@ -410,6 +410,8 @@ def pet_choices(current_pet,pet_list,money,name_list,day,owned):
         hub_choices(day,pet_list,name_list,money,owned)
     else:
         display_pet_names(pet_list,name_list,owned,day,money)
+        print(pet_list[current_pet])
+        pet_choices(current_pet,pet_list,money,name_list,day,owned)
 def hub_choices(day,pet_list,name_list,money,owned):
     num_list = 0
     num_choices = "1"
@@ -436,14 +438,16 @@ def hub_choices(day,pet_list,name_list,money,owned):
     hub_choice = int(input(f"({num_choices}) "))
     if hub_choice == 1 and pet_owned:
         current_pet = display_pet_names(pet_list,name_list,True,day,money)
-        print(day,pet_list[current_pet])
-        pet_choices(current_pet,pet_list,money,name_list,day,owned)
+        print(pet_list[current_pet])
+        pet_choices(current_pet,pet_list,money,name_list,day,True)
     elif hub_choice == 1 and pet_available or hub_choice == 2 and pet_available:
         current_pet = display_pet_names(pet_list,name_list,False,day,money)
         print(pet_list[current_pet])
-        pet_choices(current_pet,pet_list,money,name_list,day,owned)
+        pet_choices(current_pet,pet_list,money,name_list,day,False)
     elif hub_choice == 1 or hub_choice == 2 or hub_choice == 3:
-        next_day(day,owned,pet_list,name_list,money)
+        next_day(owned,pet_list,name_list,money)
+    else:
+        hub_choices(day,pet_list,name_list,money,owned)
 def next_day(day,owned,pet_list,name_list,money):
     not_owned = []
     day += 1
