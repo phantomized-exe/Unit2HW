@@ -85,7 +85,7 @@ class VirtualPet:
         Returns:
             float: from 0 up
         """
-        return self.condition_status()/100*self.get_price()*VirtualPet.day
+        return self.condition_status()/100*self.get_price()*VirtualPet.day/10
     def status(self,status_num,num_list,
                 happiness_list=['feral','mad','sad','bored','happy','joyful','schizophrenic'],
                 hunger_list=['dying of hunger','starving','hungry','peckish','full','glutted','stomach bursting'],
@@ -445,7 +445,7 @@ def hub_choices(day,pet_list,name_list,money,owned):
         print(pet_list[current_pet])
         pet_choices(current_pet,pet_list,money,name_list,day,False)
     elif hub_choice == 1 or hub_choice == 2 or hub_choice == 3:
-        next_day(owned,pet_list,name_list,money)
+        next_day(day,owned,pet_list,name_list,money)
     else:
         hub_choices(day,pet_list,name_list,money,owned)
 def next_day(day,owned,pet_list,name_list,money):
@@ -468,22 +468,22 @@ def decrease_stats(pet_list,name_list):
         if pet_list[i].owned:
             num_owned.append(i)
     for i in range(len(num_owned)):
-        if pet_list[i].species == Dog:
-            pet_list[i].happiness -= random.randint(pet_list[i].days_sad*2+1,(pet_list[i].days_sad*2+1)*(150-pet_list[i].energy)+pet_list[i].days_sad*2+1)
+        if pet_list[num_owned[i]].species == Dog:
+            pet_list[num_owned[i]].happiness -= random.randint(pet_list[num_owned[i]].days_sad*2+1,(pet_list[num_owned[i]].days_sad*2+1)*(150-pet_list[num_owned[i]].energy)+pet_list[num_owned[i]].days_sad*2+1)
         else:
-            pet_list[i].happiness -= random.randint(pet_list[i].days_sad+1,(pet_list[i].days_sad+1)*(150-pet_list[i].energy)+pet_list[i].days_sad+1)
-        if pet_list[i].species == Fish or pet_list[i].species == Hamster:
-            pet_list[i].hunger -= random.randint(pet_list[i].days_starving*2+1,(pet_list[i].days_starving+1)*(150-pet_list[i].energy)/2+pet_list[i].days_starving*2+1)
+            pet_list[num_owned[i]].happiness -= random.randint(pet_list[num_owned[i]].days_sad+1,(pet_list[num_owned[i]].days_sad+1)*(150-pet_list[num_owned[i]].energy)+pet_list[num_owned[i]].days_sad+1)
+        if pet_list[num_owned[i]].species == Fish or pet_list[num_owned[i]].species == Hamster:
+            pet_list[num_owned[i]].hunger -= random.randint(pet_list[num_owned[i]].days_starving*2+1,(pet_list[num_owned[i]].days_starving+1)*(150-pet_list[num_owned[i]].energy)/2+pet_list[num_owned[i]].days_starving*2+1)
         else:
-            pet_list[i].hunger -= random.randint(pet_list[i].days_starving+1,(pet_list[i].days_starving+1)*(150-pet_list[i].energy)+pet_list[i].days_starving+1)
+            pet_list[i].hunger -= random.randint(pet_list[num_owned[i]].days_starving+1,(pet_list[num_owned[i]].days_starving+1)*(150-pet_list[num_owned[i]].energy)+pet_list[num_owned[i]].days_starving+1)
         if pet_list[i].species == Cat:
-            pet_list[i].energy -= random.randint(pet_list[i].energy//10,(pet_list[i].days_sad*2+1)*(pet_list[i].days_starving*2+1)+pet_list[i].energy//10)
+            pet_list[i].energy -= random.randint(pet_list[num_owned[i]].energy//3,(pet_list[num_owned[i]].days_sad*2+1)*(pet_list[num_owned[i]].days_starving*2+1)+pet_list[num_owned[i]].energy//2)
         else:
-            pet_list[i].energy -= random.randint(pet_list[i].energy//15,(pet_list[i].days_sad+1)*(pet_list[i].days_starving+1)+pet_list[i].energy//15)
+            pet_list[i].energy -= random.randint(pet_list[num_owned[i]].energy//5,(pet_list[num_owned[i]].days_sad+1)*(pet_list[num_owned[i]].days_starving+1)+pet_list[num_owned[i]].energy//3)
         if pet_list[i].condition_status() == 0:
-            print(f"{pet_list[i].name} has perished!")
-            pet_list.remove(pet_list[i])
-            name_list.remove(pet_list[i].name)
+            print(f"{pet_list[num_owned[i]].name} the {pet_list[num_owned[i]].species} has perished!")
+            pet_list.remove(pet_list[num_owned[i]])
+            name_list.remove(pet_list[num_owned[i]].name)
 def main():
     """main
     """
