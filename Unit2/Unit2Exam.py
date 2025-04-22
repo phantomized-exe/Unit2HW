@@ -85,7 +85,7 @@ class VirtualPet:
         Returns:
             float: from 0 up
         """
-        return self.condition_status()/100*self.get_price()*VirtualPet.day/10
+        return self.condition_status()/100*self.get_price()*VirtualPet.day
     def status(self,status_num,num_list,
                 happiness_list=['feral','mad','sad','bored','happy','joyful','schizophrenic'],
                 hunger_list=['dying of hunger','starving','hungry','peckish','full','glutted','stomach bursting'],
@@ -154,7 +154,7 @@ class VirtualPet:
     def eat(self,money):
         """eat increases all stats but costs money. you can also starve your pet
         """
-        food_list = [random.randint(1,5),random.randint(5,10),random.randint(10,20)]
+        food_list = [random.randint(10,20),random.randint(20,30),random.randint(35,50)]
         print()
         eat_input = int(input(f"How much do you want to feed {self.name}? (You have ${money:.2f})\n1. Nothing\n2. A little: ${food_list[0]}\n3. Normal: ${food_list[1]}\n4. A lot: ${food_list[2]}\n(1/2/3/4) "))
         if eat_input != 1:
@@ -423,8 +423,24 @@ def hub_choices(day,pet_list,name_list,money,owned):
         if pet_list[i].owned:
             num_list += 1
             pet_owned = True
+            danger_str = ""
+            danger_meter = False
             num_choices += f"/{num_list+1}"
-            print(f"{num_list}. Owned pets")
+            for i in range(len(pet_list)):
+                if pet_list[i].condition_status() <= 5:
+                    if danger_str == "":
+                        danger_str += f"{name_list[i]}"
+                    else:
+                        danger_meter = True
+                        danger_str += f", {name_list[i]}"
+            if danger_str == "":
+                print(f"{num_list}. Owned pets")
+            else:
+                if danger_meter:
+                    danger_str += " are"
+                else:
+                    danger_str += " is"
+                print(f"{num_list}. Owned pets (Warning: {danger_str} about to perish)")
             break
     for i in range(len(pet_list)):
         if not pet_list[i].owned:
@@ -440,7 +456,7 @@ def hub_choices(day,pet_list,name_list,money,owned):
         current_pet = display_pet_names(pet_list,name_list,True,day,money)
         print(pet_list[current_pet])
         pet_choices(current_pet,pet_list,money,name_list,day,True)
-    elif hub_choice == 1 and pet_available or hub_choice == 2 and pet_available:
+    elif hub_choice == 1 and pet_available and not pet_owned or hub_choice == 2 and pet_available and pet_owned:
         current_pet = display_pet_names(pet_list,name_list,False,day,money)
         print(pet_list[current_pet])
         pet_choices(current_pet,pet_list,money,name_list,day,False)
@@ -460,7 +476,7 @@ def next_day(day,owned,pet_list,name_list,money):
     for i in range(len(not_owned)):
         pet_list.remove(pet_list[not_owned[i]])
         name_list.remove(name_list[not_owned[i]])
-    generate_pet(pet_list,name_list,random.randint(1,10))
+    generate_pet(pet_list,name_list,random.randint(1,day))
     hub_choices(day,pet_list,name_list,money,owned)
 def decrease_stats(pet_list,name_list):
     num_owned = []
@@ -475,19 +491,19 @@ def decrease_stats(pet_list,name_list):
         if pet_list[num_owned[i]].species == Fish or pet_list[num_owned[i]].species == Hamster:
             pet_list[num_owned[i]].hunger -= random.randint(pet_list[num_owned[i]].days_starving*2+1,(pet_list[num_owned[i]].days_starving+1)*(150-pet_list[num_owned[i]].energy)/2+pet_list[num_owned[i]].days_starving*2+1)
         else:
-            pet_list[i].hunger -= random.randint(pet_list[num_owned[i]].days_starving+1,(pet_list[num_owned[i]].days_starving+1)*(150-pet_list[num_owned[i]].energy)+pet_list[num_owned[i]].days_starving+1)
-        if pet_list[i].species == Cat:
-            pet_list[i].energy -= random.randint(pet_list[num_owned[i]].energy//3,(pet_list[num_owned[i]].days_sad*2+1)*(pet_list[num_owned[i]].days_starving*2+1)+pet_list[num_owned[i]].energy//2)
+            pet_list[num_owned[i]].hunger -= random.randint(pet_list[num_owned[i]].days_starving+1,(pet_list[num_owned[i]].days_starving+1)*(150-pet_list[num_owned[i]].energy)/3+pet_list[num_owned[i]].days_starving+1)
+        if pet_list[num_owned[i]].species == Cat:
+            pet_list[num_owned[i]].energy -= random.randint(pet_list[num_owned[i]].energy//3,(pet_list[num_owned[i]].days_sad*2+1)*(pet_list[num_owned[i]].days_starving*2+1)+pet_list[num_owned[i]].energy//2)
         else:
-            pet_list[i].energy -= random.randint(pet_list[num_owned[i]].energy//5,(pet_list[num_owned[i]].days_sad+1)*(pet_list[num_owned[i]].days_starving+1)+pet_list[num_owned[i]].energy//3)
-        if pet_list[i].condition_status() == 0:
+            pet_list[num_owned[i]].energy -= random.randint(pet_list[num_owned[i]].energy//5,(pet_list[num_owned[i]].days_sad+1)*(pet_list[num_owned[i]].days_starving+1)+pet_list[num_owned[i]].energy//3)
+        if pet_list[num_owned[i]].condition_status() == 0:
             print(f"{pet_list[num_owned[i]].name} the {pet_list[num_owned[i]].species} has perished!")
             pet_list.remove(pet_list[num_owned[i]])
             name_list.remove(pet_list[num_owned[i]].name)
 def main():
     """main
     """
-    money = 100
+    money = random.randint(85,120)
     day = 1
     pet_list = []
     name_list = []
