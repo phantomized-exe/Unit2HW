@@ -379,7 +379,10 @@ def pet_choices(current_pet,pet_list,money,name_list,day,owned):
     num_choices = ""
     pet_choice_list = []
     print()
-    print(f"You have ${money:.2f}:")
+    if not pet_list[current_pet].owned and pet_list[current_pet].get_price() > money:
+        print(f"You have ${money:.2f} (Not enough to buy pet):")
+    else:
+        print(f"You have ${money:.2f}:")
     if pet_list[current_pet].get_price() < money and not pet_list[current_pet].owned:
         pet_choice_list.append("Buy pet")
     if pet_list[current_pet].owned:
@@ -418,7 +421,7 @@ def hub_choices(day,pet_list,name_list,money,owned):
     pet_owned = False
     pet_available = False
     print()
-    print(f"Day {day} (${money:.2f}):")#display owned pets, display buyable pets, next day, stock market?
+    print(f"Day {day} (${money:.2f}):")
     for i in range(len(pet_list)):
         if pet_list[i].owned:
             num_list += 1
@@ -427,7 +430,7 @@ def hub_choices(day,pet_list,name_list,money,owned):
             danger_meter = False
             num_choices += f"/{num_list+1}"
             for i in range(len(pet_list)):
-                if pet_list[i].condition_status() <= 5:
+                if pet_list[i].condition_status() <= 25:
                     if danger_str == "":
                         danger_str += f"{name_list[i]}"
                     else:
@@ -465,17 +468,17 @@ def hub_choices(day,pet_list,name_list,money,owned):
     else:
         hub_choices(day,pet_list,name_list,money,owned)
 def next_day(day,owned,pet_list,name_list,money):
-    not_owned = []
     day += 1
+    day_pet_list = []
+    day_name_list = []
     VirtualPet.day += 1
     for i in range(len(pet_list)):
-        if not pet_list[i].owned:
-            not_owned.append(i)
+        if pet_list[i].owned:
+            day_pet_list.append(pet_list[i])
+            day_name_list.append(pet_list[i].name)
+    pet_list = day_pet_list
+    name_list = day_name_list
     decrease_stats(pet_list,name_list)
-    not_owned.reverse()
-    for i in range(len(not_owned)):
-        pet_list.remove(pet_list[not_owned[i]])
-        name_list.remove(name_list[not_owned[i]])
     generate_pet(pet_list,name_list,random.randint(1,day))
     hub_choices(day,pet_list,name_list,money,owned)
 def decrease_stats(pet_list,name_list):
@@ -489,17 +492,18 @@ def decrease_stats(pet_list,name_list):
         else:
             pet_list[num_owned[i]].happiness -= random.randint(pet_list[num_owned[i]].days_sad+1,(pet_list[num_owned[i]].days_sad+1)*(150-pet_list[num_owned[i]].energy)+pet_list[num_owned[i]].days_sad+1)
         if pet_list[num_owned[i]].species == Fish or pet_list[num_owned[i]].species == Hamster:
-            pet_list[num_owned[i]].hunger -= random.randint(pet_list[num_owned[i]].days_starving*2+1,(pet_list[num_owned[i]].days_starving+1)*(150-pet_list[num_owned[i]].energy)/2+pet_list[num_owned[i]].days_starving*2+1)
+            pet_list[num_owned[i]].hunger -= random.randint(pet_list[num_owned[i]].days_starving*2+1,(pet_list[num_owned[i]].days_starving+1)*(150-pet_list[num_owned[i]].energy)//2+pet_list[num_owned[i]].days_starving*2+1)
         else:
-            pet_list[num_owned[i]].hunger -= random.randint(pet_list[num_owned[i]].days_starving+1,(pet_list[num_owned[i]].days_starving+1)*(150-pet_list[num_owned[i]].energy)/3+pet_list[num_owned[i]].days_starving+1)
+            pet_list[num_owned[i]].hunger -= random.randint(pet_list[num_owned[i]].days_starving+1,(pet_list[num_owned[i]].days_starving+1)*(150-pet_list[num_owned[i]].energy)//3+pet_list[num_owned[i]].days_starving+1)
         if pet_list[num_owned[i]].species == Cat:
             pet_list[num_owned[i]].energy -= random.randint(pet_list[num_owned[i]].energy//3,(pet_list[num_owned[i]].days_sad*2+1)*(pet_list[num_owned[i]].days_starving*2+1)+pet_list[num_owned[i]].energy//2)
         else:
             pet_list[num_owned[i]].energy -= random.randint(pet_list[num_owned[i]].energy//5,(pet_list[num_owned[i]].days_sad+1)*(pet_list[num_owned[i]].days_starving+1)+pet_list[num_owned[i]].energy//3)
-        if pet_list[num_owned[i]].condition_status() == 0:
+        if pet_list[num_owned[i]].condition_status() <= 0:
+            print()
             print(f"{pet_list[num_owned[i]].name} the {pet_list[num_owned[i]].species} has perished!")
-            pet_list.remove(pet_list[num_owned[i]])
-            name_list.remove(pet_list[num_owned[i]].name)
+            name_list.pop(i)
+            pet_list.pop(i)
 def main():
     """main
     """
@@ -513,3 +517,4 @@ def main():
     hub_choices(day,pet_list,name_list,money,owned)
 if __name__ == "__main__":
     main()
+#things to add: stock market, animal wellfare
