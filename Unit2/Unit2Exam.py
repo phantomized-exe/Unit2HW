@@ -374,7 +374,6 @@ def generate_pet(pet_list,name_list,num_pets,owned=False):
         name_list = name(random_gender,name_list)
         code_id = generate_pet_id(pet_list)
         pet = species()(code_id,random_gender,name_list[-1],rand_price)
-        print(pet)
         if owned:
             pet.owned = True
         pet_list.append(pet)
