@@ -529,4 +529,4 @@ def main():
     hub_choices(day,pet_list,name_list,money,owned)
 if __name__ == "__main__":
     main()
-#things to add: stock market, animal wellfare, pet personalities
+#things to add: stock market, animal wellfare, pet personalities, more species, more names
