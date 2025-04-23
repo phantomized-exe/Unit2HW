@@ -491,7 +491,6 @@ def next_day(day,owned,pet_list,name_list,money):
     hub_choices(day,pet_list,name_list,money,owned)
 def decrease_stats(pet_list,name_list):
     for i in pet_list[:]:
-        print(i)
         if not i.owned:
             continue
         ds = i.days_sad**2
