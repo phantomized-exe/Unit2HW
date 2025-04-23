@@ -284,16 +284,14 @@ def name(gender,name_list):
 ]
     if gender == "male":
         male_name = random.randint(0,99)
-        if male_name in name_list:
-            pass
-        else:
-            name_list.append(male_pet_names[male_name])
+        while male_pet_names[male_name] in name_list:
+            male_name = random.randint(0,99)
+        name_list.append(male_pet_names[male_name])
     else:
         female_name = random.randint(0,99)
-        if female_name in name_list:
-            pass
-        else:
-            name_list.append(female_pet_names[female_name])
+        while female_pet_names[female_name] in name_list:
+            female_name = random.randint(0,99)
+        name_list.append(female_pet_names[female_name])
     return name_list
 def species():
     """randomizes a species for pet
@@ -439,13 +437,13 @@ def hub_choices(day,pet_list,name_list,money,owned):
             danger_str = ""
             danger_meter = False
             num_choices += f"/{num_list+1}"
-            for i in range(len(pet_list)):
-                if pet_list[i].condition_status() <= 25:
+            for i in pet_list:
+                if i.condition_status() <= 20:
                     if danger_str == "":
-                        danger_str += f"{name_list[i]}"
+                        danger_str += f"{i.name}"
                     else:
                         danger_meter = True
-                        danger_str += f", {name_list[i]}"
+                        danger_str += f", {i.name}"
             if danger_str == "":
                 print(f"{num_list}. Owned pets")
             else:
@@ -492,46 +490,33 @@ def next_day(day,owned,pet_list,name_list,money):
     generate_pet(pet_list,name_list,random.randint(1,day))
     hub_choices(day,pet_list,name_list,money,owned)
 def decrease_stats(pet_list,name_list):
-    num_owned = []
-    for i in range(len(pet_list)):
-        if pet_list[i].owned:
-            num_owned.append(i)
-    for i in range(len(num_owned)):
-        if pet_list[num_owned[i]].species == "dog":
-            pet_list[num_owned[i]].happiness -= random.randint(pet_list[num_owned[i]].days_sad*3+2, (pet_list[num_owned[i]].days_sad*3+2)*(150-pet_list[num_owned[i]].energy)//15 + 3)
+    for i in pet_list[:]:
+        print(i)
+        if not i.owned:
+            continue
+        ds = i.days_sad**2
+        if i.species == "dog":
+            i.happiness -= random.randint(ds*5 + 4, (ds*5 + 4)*(150 - i.energy) // 10 + 6)
         else:
-            pet_list[num_owned[i]].happiness -= random.randint(pet_list[num_owned[i]].days_sad+1, (pet_list[num_owned[i]].days_sad+1)*(150-pet_list[num_owned[i]].energy)//20 + 2)
-        if pet_list[num_owned[i]].species == "cat":
-            pet_list[num_owned[i]].hunger -= random.randint(pet_list[num_owned[i]].days_sad*3+2, (pet_list[num_owned[i]].days_sad*3+2)*(150-pet_list[num_owned[i]].energy)//10 + 3)
-        elif pet_list[num_owned[i]].species == "fish" or pet_list[num_owned[i]].species == "hamster":
-            pet_list[num_owned[i]].hunger -= random.randint(pet_list[num_owned[i]].days_sad+1, (pet_list[num_owned[i]].days_sad+1)*(150-pet_list[num_owned[i]].energy)//20 + 1)
+            i.happiness -= random.randint(ds + 2, (ds + 2)*(150 - i.energy) // 15 + 3)
+
+        if i.species == "cat":
+            i.hunger -= random.randint(ds*5 + 4, (ds*5 + 4)*(150 - i.energy) // 7 + 6)
+        elif i.species == "fish" or i.species == "hamster":
+            i.hunger -= random.randint(ds + 2, (ds + 2)*(150 - i.energy) // 15 + 3)
         else:
-            pet_list[num_owned[i]].hunger -= random.randint(pet_list[num_owned[i]].days_sad+1, (pet_list[num_owned[i]].days_sad+1)*(150-pet_list[num_owned[i]].energy)//25 + 1)
-        if pet_list[num_owned[i]].species == "fish" or pet_list[num_owned[i]].species == "hamster":
-            pet_list[num_owned[i]].energy -= random.randint(pet_list[num_owned[i]].energy//4, (pet_list[num_owned[i]].days_sad+1)*(pet_list[num_owned[i]].days_sad+1)//2 + pet_list[num_owned[i]].energy//3)
-        elif pet_list[num_owned[i]].species == "cat":
-            pet_list[num_owned[i]].energy -= random.randint(pet_list[num_owned[i]].energy//5, (pet_list[num_owned[i]].days_sad+1)*(pet_list[num_owned[i]].days_sad+1)//3 + pet_list[num_owned[i]].energy//4)
+            i.hunger -= random.randint(ds + 2, (ds + 2)*(150 - i.energy) // 20 + 2)
+        if i.species == "fish" or i.species == "hamster":
+            i.energy -= random.randint(i.energy // 3, (ds + 2)*(ds + 2) // 1 + i.energy // 2)
+        elif i.species == "cat":
+            i.energy -= random.randint(i.energy // 4, (ds + 2)*(ds + 2) // 2 + i.energy // 3)
         else:
-            pet_list[num_owned[i]].energy -= random.randint(pet_list[num_owned[i]].energy//6, (pet_list[num_owned[i]].days_sad+1)*(pet_list[num_owned[i]].days_sad+1)//4 + pet_list[num_owned[i]].energy//5)
-        '''
-        if pet_list[num_owned[i]].species == Dog:
-            pet_list[num_owned[i]].happiness -= random.randint(pet_list[num_owned[i]].days_sad*2+1,(pet_list[num_owned[i]].days_sad*2+1)*(150-pet_list[num_owned[i]].energy)+pet_list[num_owned[i]].days_sad*2+1)
-        else:
-            pet_list[num_owned[i]].happiness -= random.randint(pet_list[num_owned[i]].days_sad+1,(pet_list[num_owned[i]].days_sad+1)*(150-pet_list[num_owned[i]].energy)+pet_list[num_owned[i]].days_sad+1)
-        if pet_list[num_owned[i]].species == Fish or pet_list[num_owned[i]].species == Hamster:
-            pet_list[num_owned[i]].hunger -= random.randint(pet_list[num_owned[i]].days_sad*2+1,(pet_list[num_owned[i]].days_sad+1)*(150-pet_list[num_owned[i]].energy)//2+pet_list[num_owned[i]].days_sad*2+1)
-        else:
-            pet_list[num_owned[i]].hunger -= random.randint(pet_list[num_owned[i]].days_sad+1,(pet_list[num_owned[i]].days_sad+1)*(150-pet_list[num_owned[i]].energy)//3+pet_list[num_owned[i]].days_sad+1)
-        if pet_list[num_owned[i]].species == Cat:
-            pet_list[num_owned[i]].energy -= random.randint(pet_list[num_owned[i]].energy//3,(pet_list[num_owned[i]].days_sad*2+1)*(pet_list[num_owned[i]].days_sad*2+1)+pet_list[num_owned[i]].energy//2)
-        else:
-            pet_list[num_owned[i]].energy -= random.randint(pet_list[num_owned[i]].energy//5,(pet_list[num_owned[i]].days_sad+1)*(pet_list[num_owned[i]].days_sad+1)+pet_list[num_owned[i]].energy//3)
-            '''
-        if pet_list[num_owned[i]].condition_status() <= 0:
+            i.energy -= random.randint(i.energy // 5, (ds + 2)*(ds + 2) // 3 + i.energy // 4)
+        if i.condition_status() <= 0:
             print()
-            print(f"{pet_list[num_owned[i]].name} the {pet_list[num_owned[i]].species} has perished!")
-            name_list.pop(i)
-            pet_list.pop(i)
+            print(f"{i.name} the {i.species} has perished!")
+            name_list.remove(i.name)
+            pet_list.remove(i)
 def main():
     """main
     """
