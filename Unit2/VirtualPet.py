@@ -499,7 +499,6 @@ def decrease_stats(pet_list,name_list):
             i.happiness -= random.randint(ds*5 + 4, (ds*5 + 4)*(150 - i.energy) // 10 + 6)
         else:
             i.happiness -= random.randint(ds + 2, (ds + 2)*(150 - i.energy) // 15 + 3)
-
         if i.species == "cat":
             i.hunger -= random.randint(ds*5 + 4, (ds*5 + 4)*(150 - i.energy) // 7 + 6)
         elif i.species == "fish" or i.species == "hamster":
