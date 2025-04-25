@@ -178,6 +178,7 @@ class VirtualPet:
             self.energy -= self.days_sad*self.days_sad
         return money
     def rest(self):
+        print()
         rest_input = int(input(f"How much rest should {self.name} get?\n1. Nothing\n2. A little\n3. Normal\n4. A lot\n(1/2/3/4) "))
         if 2 <= rest_input <=4:
             self.energy += random.randint(1*rest_input,10*rest_input)
@@ -226,8 +227,10 @@ class Fish(VirtualPet):
     def play(self):
         """overrides play method because fish dont like to be played with
         """
+        print()
         print("Warning: It might not be a good idea to play with a fish")
         continue_play = input(f"Play with {self.name}? (y/n) ")
+        print()
         if continue_play == "y":
             play_input = int(input(f"How hard do you want to play with {self.name}?\n1. Gentle\n2. Normal\n3. Hard\n(1/2/3) "))
             if random.randint(1,8-play_input) == 1:
@@ -397,6 +400,7 @@ def pet_choices(current_pet,pet_list,money,name_list,day,owned):
         pet_choice_list.append("Sell pet")
         pet_choice_list.append("Play with pet")
         pet_choice_list.append("Feed pet")
+        pet_choice_list.append("Rest pet")
     pet_choice_list.append("Back")
     for i in range(len(pet_choice_list)):
         if num_choices == "":
@@ -418,6 +422,9 @@ def pet_choices(current_pet,pet_list,money,name_list,day,owned):
         hub_choices(day,pet_list,name_list,money,owned)
     elif pet_choice == 3 and pet_list[current_pet].owned:
         money = pet_list[current_pet].eat(money)
+        hub_choices(day,pet_list,name_list,money,owned)
+    elif pet_choice == 4 and pet_list[current_pet].owned:
+        pet_list[current_pet].rest()
         hub_choices(day,pet_list,name_list,money,owned)
     else:
         current_pet = display_pet_names(pet_list,name_list,owned,day,money)
