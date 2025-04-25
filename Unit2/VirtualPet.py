@@ -1,7 +1,7 @@
 import random
 class VirtualPet:
     day = 1
-    def __init__(self,id,gender=str,name=str,price=float,owned=False,condition=random.randint(75,125),happiness=random.randint(75,125),hunger=random.randint(75,125),energy=random.randint(75,125),days_sad=0):
+    def __init__(self,id,gender=str,name=str,price=float,owned=False,age=round(random.uniform(1,20),3),condition=random.randint(75,125),happiness=random.randint(75,125),hunger=random.randint(75,125),energy=random.randint(75,125),days_sad=0):
         """Initializes class VirtualPet
 
         Args:
@@ -20,6 +20,7 @@ class VirtualPet:
         self.gender = gender
         self.name = name
         self.owned = owned
+        self.age = age
         self.condition = condition
         self.happiness = happiness
         self.hunger = hunger
@@ -34,7 +35,7 @@ class VirtualPet:
         """
         print()
         self.check_stats()
-        return f"Name: {self.name}\nSpecies: {self.species}\nGender: {self.gender}\nCondition: {self.condition_status()}%\nOwned: {self.owned}\nHappiness: {self.status(self.happiness,1)}\nHunger: {self.status(self.hunger,2)}\nEnergy: {self.status(self.energy,3)}\nPrice: ${self.price_status():0.2f}"
+        return f"Name: {self.name}\nSpecies: {self.species}\nGender: {self.gender}\nAge: {self.age:0.0f}\nCondition: {self.condition_status()}%\nOwned: {self.owned}\nHappiness: {self.status(self.happiness,1)}\nHunger: {self.status(self.hunger,2)}\nEnergy: {self.status(self.energy,3)}\nPrice: ${self.price_status():0.2f}"
     def __add__(self,other):
         """Overrides adding for VirtualPet class
 
@@ -492,10 +493,11 @@ def next_day(day,owned,pet_list,name_list,money):
     day_pet_list = []
     day_name_list = []
     VirtualPet.day += 1
-    for i in range(len(pet_list)):
-        if pet_list[i].owned:
-            day_pet_list.append(pet_list[i])
-            day_name_list.append(pet_list[i].name)
+    for i in pet_list:
+        i.age += .003
+        if i.owned:
+            day_pet_list.append(i)
+            day_name_list.append(i.name)
     pet_list = day_pet_list
     name_list = day_name_list
     decrease_stats(pet_list,name_list)
@@ -507,26 +509,42 @@ def decrease_stats(pet_list,name_list):
             continue
         ds = i.days_sad**2
         if i.species == "dog":
-            i.happiness -= random.randint(ds*5 + 4, (ds*5 + 4)*(150 - i.energy) // 10 + 6)
+            i.happiness -= round(random.uniform((ds*5+4)+i.age),((ds*5+4)*(150-i.energy)//10+6)+i.age,0)
         else:
-            i.happiness -= random.randint(ds + 2, (ds + 2)*(150 - i.energy) // 15 + 3)
+            i.happiness -= round(random.uniform((ds+2)+i.age,((ds+2)*(150-i.energy)//15+3)+i.age),0)
         if i.species == "cat":
-            i.hunger -= random.randint(ds*5 + 4, (ds*5 + 4)*(150 - i.energy) // 7 + 6)
+            i.hunger -= round(random.uniform((ds*5+4)+i.age,((ds*5+4)*(150-i.energy)//7+6)+i.age),0)
         elif i.species == "fish" or i.species == "hamster":
-            i.hunger -= random.randint(ds + 2, (ds + 2)*(150 - i.energy) // 15 + 3)
+            i.hunger -= round(random.uniform((ds+2)+i.age,((ds+2)*(150-i.energy)//15+3)+i.age),0)
         else:
-            i.hunger -= random.randint(ds + 2, (ds + 2)*(150 - i.energy) // 20 + 2)
+            i.hunger -= round(random.uniform((ds+2)+i.age,((ds+2)*(150-i.energy)//20+2)+i.age),0)
         if i.species == "fish" or i.species == "hamster":
-            i.energy -= random.randint(i.energy // 3, (ds + 2)*(ds + 2) // 1 + i.energy // 2)
+            i.energy -= round(random.uniform((i.energy//3)+i.age,((ds+2)*(ds+2)//1+i.energy//2)+i.age),0)
         elif i.species == "cat":
-            i.energy -= random.randint(i.energy // 4, (ds + 2)*(ds + 2) // 2 + i.energy // 3)
+            i.energy -= round(random.uniform((i.energy//4)+i.age,((ds+2)*(ds+2)//2+i.energy//3)+i.age),0)
         else:
-            i.energy -= random.randint(i.energy // 5, (ds + 2)*(ds + 2) // 3 + i.energy // 4)
+            i.energy -= round(random.uniform((i.energy//5)+i.age,((ds+2)*(ds+2)//3+i.energy//4)+i.age),0)
         if i.condition_status() <= 0:
             print()
             print(f"{i.name} the {i.species} has perished!")
             name_list.remove(i.name)
             pet_list.remove(i)
+def breed_pets(day,pet_list,name_list,money,owned):
+    num_dog = 0
+    num_cat = 0
+    num_fish = 0
+    num_hamster = 0
+    for i in pet_list:
+        if i.species == Dog:
+            num_dog += 1
+        elif i.species == Cat:
+            num_cat += 1
+        elif i.species == Fish:
+            num_fish += 1
+        elif i.species == Hamster:
+            num_hamster += 1
+    if num_dog >= 2:
+        pass
 def main():
     """main
     """
@@ -540,4 +558,4 @@ def main():
     hub_choices(day,pet_list,name_list,money,owned)
 if __name__ == "__main__":
     main()
-#things to add: stock market, animal wellfare, pet personalities, more species, more names, breeding
+#things to add: stock market, animal wellfare, pet personalities, more species, more names, breeding, insurance
