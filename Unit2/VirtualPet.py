@@ -414,9 +414,14 @@ def pet_choices(current_pet,pet_list,money,name_list,day,owned):
         pet_list[current_pet].owned = True
         hub_choices(day,pet_list,name_list,money,owned)
     elif pet_choice == 1 and pet_list[current_pet].owned:
-        money += pet_list[current_pet].price_status()
-        pet_list[current_pet].owned = False
-        hub_choices(day,pet_list,name_list,money,owned)
+        print()
+        check_choice = input(f"Are you sure you want to sell {pet_list[current_pet].name}? (y/n) ")
+        if check_choice == "y":
+            money += pet_list[current_pet].price_status()
+            pet_list[current_pet].owned = False
+            hub_choices(day,pet_list,name_list,money,owned)
+        else:
+            pet_choices(current_pet,pet_list,money,name_list,day,owned)
     elif pet_choice == 2 and pet_list[current_pet].owned:
         pet_list[current_pet].play()
         hub_choices(day,pet_list,name_list,money,owned)
@@ -535,4 +540,4 @@ def main():
     hub_choices(day,pet_list,name_list,money,owned)
 if __name__ == "__main__":
     main()
-#things to add: stock market, animal wellfare, pet personalities, more species, more names
+#things to add: stock market, animal wellfare, pet personalities, more species, more names, breeding
