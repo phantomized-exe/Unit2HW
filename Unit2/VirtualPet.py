@@ -562,9 +562,12 @@ def decrease_stats(pet_list,name_list):
             i.energy -= round(random.uniform((i.energy//4)+i.age,((ds+2)*(ds+2)//2+i.energy//3)+i.age),0)
         else:
             i.energy -= round(random.uniform((i.energy//5)+i.age,((ds+2)*(ds+2)//3+i.energy//4)+i.age),0)
-        if i.condition_status() <= 0:
+        if i.condition_status() <= 0 or i.species != Hamster and i.age >= random.randint(15,25) or i.species == Hamster and i.age >= random.randint(2,3):
             print()
-            print(f"{i.name} the {i.species} has perished!")
+            if i.condition_status() <= 0:
+                print(f"{i.name} the {i.species} has perished from neglect!")
+            else:
+                print(f"{i.name} the {i.species} has perished from old age!")
             name_list.remove(i.name)
             pet_list.remove(i)
 def breed_pets(day,pet_list,name_list,money,owned,male_dog_list,female_dog_list,male_cat_list,female_cat_list,male_fish_list,female_fish_list,male_hamster_list,female_hamster_list):
