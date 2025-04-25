@@ -205,6 +205,7 @@ class Dog(VirtualPet):
     happiness = random.randint(45,150)
     hunger = random.randint(26,75)
     energy = random.randint(hunger,150)
+    price = random.randint(1,(happiness+hunger+energy)//4)
 class Cat(VirtualPet):
     """class Cat inherits from VirtualPet
 
@@ -215,6 +216,7 @@ class Cat(VirtualPet):
     happiness = random.randint(30,150)
     hunger = random.randint(35,150)
     energy = random.randint(26,hunger)
+    price = random.randint(1,(happiness+hunger+energy)//4)
 class Fish(VirtualPet):
     """class Fish inherits from VirtualPet
 
@@ -225,6 +227,7 @@ class Fish(VirtualPet):
     happiness = random.randint(26,100)
     hunger = random.randint(50,125)
     energy = random.randint(30,hunger)
+    price = random.randint(1,(happiness+hunger+energy)//6)
     def play(self):
         """overrides play method because fish dont like to be played with
         """
@@ -249,7 +252,7 @@ class Hamster(VirtualPet):
     happiness = random.randint(26,150)
     hunger = random.randint(35,125)
     energy = random.randint(50,125)
-
+    price = random.randint(1,(happiness+hunger+energy)//6)
 def gender():
     random_gender = random.randint(1,2)
     if random_gender == 1:
@@ -466,6 +469,37 @@ def hub_choices(day,pet_list,name_list,money,owned):
                     danger_str += " is"
                 print(f"{num_list}. Owned pets (Warning: {danger_str} about to perish)")
             break
+    male_dog_list = []
+    female_dog_list = []
+    male_cat_list = []
+    female_cat_list = []
+    male_fish_list = []
+    female_fish_list = []
+    male_hamster_list = []
+    female_hamster_list = []
+    breedable = False
+    for i in pet_list:
+        if i.species == "dog" and i.owned and i.gender == "male":
+            male_dog_list.append(i)
+        elif i.species == "dog" and i.owned and i.gender == "female":
+            female_dog_list.append(i)
+        elif i.species == "cat" and i.owned and i.gender == "male":
+            male_cat_list.append(i)
+        elif i.species == "cat" and i.owned and i.gender == "female":
+            female_cat_list.append(i)
+        elif i.species == "fish" and i.owned and i.gender == "male":
+            male_fish_list.append(i)
+        elif i.species == "fish" and i.owned and i.gender == "female":
+            female_fish_list.append(i)
+        elif i.species == "hamster" and i.owned and i.gender == "male":
+            male_hamster_list.append(i)
+        elif i.species == "hamster" and i.owned and i.gender == "female":
+            female_hamster_list.append(i)
+    if len(male_dog_list) >= 1 and len(female_dog_list) >= 1 or len(male_cat_list) >= 1 and len(female_cat_list) >= 1 or len(male_fish_list) >= 1 and len(female_fish_list) >= 1 or len(male_hamster_list) >= 1 and len(female_hamster_list) >= 1:
+        breedable = True
+        num_list += 1
+        num_choices += f"/{num_list+1}"
+        print(f"{num_list}. Breed pets")
     for i in range(len(pet_list)):
         if not pet_list[i].owned:
             num_list += 1
@@ -480,11 +514,14 @@ def hub_choices(day,pet_list,name_list,money,owned):
         current_pet = display_pet_names(pet_list,name_list,True,day,money)
         print(pet_list[current_pet])
         pet_choices(current_pet,pet_list,money,name_list,day,True)
-    elif hub_choice == 1 and pet_available and not pet_owned or hub_choice == 2 and pet_available and pet_owned:
+    elif hub_choice == 2 and pet_owned and breedable:
+        breed_pets(day,pet_list,name_list,money,owned,male_dog_list,female_dog_list,male_cat_list,female_cat_list,male_fish_list,female_fish_list,male_hamster_list,female_hamster_list)
+        hub_choices(day,pet_list,name_list,money,owned)
+    elif hub_choice == 1 and pet_available and not pet_owned or hub_choice == 2 and pet_available and pet_owned and not breedable or hub_choice == 3 and pet_available and pet_owned and breedable:
         current_pet = display_pet_names(pet_list,name_list,False,day,money)
         print(pet_list[current_pet])
         pet_choices(current_pet,pet_list,money,name_list,day,False)
-    elif hub_choice == 1 or hub_choice == 2 or hub_choice == 3:
+    elif hub_choice == 1 or hub_choice == 2 or hub_choice == 3 or hub_choice == 4:
         next_day(day,owned,pet_list,name_list,money)
     else:
         hub_choices(day,pet_list,name_list,money,owned)
@@ -529,22 +566,110 @@ def decrease_stats(pet_list,name_list):
             print(f"{i.name} the {i.species} has perished!")
             name_list.remove(i.name)
             pet_list.remove(i)
-def breed_pets(day,pet_list,name_list,money,owned):
-    num_dog = 0
-    num_cat = 0
-    num_fish = 0
-    num_hamster = 0
-    for i in pet_list:
-        if i.species == Dog:
-            num_dog += 1
-        elif i.species == Cat:
-            num_cat += 1
-        elif i.species == Fish:
-            num_fish += 1
-        elif i.species == Hamster:
-            num_hamster += 1
-    if num_dog >= 2:
-        pass
+def breed_pets(day,pet_list,name_list,money,owned,male_dog_list,female_dog_list,male_cat_list,female_cat_list,male_fish_list,female_fish_list,male_hamster_list,female_hamster_list):
+    num_list = 0
+    num_choices = "1"
+    dog_str = ""
+    cat_str = ""
+    fish_str = ""
+    hamster_str = ""
+    dog = False
+    cat = False
+    fish = False
+    hamster = False
+    print()
+    print("Select species to breed:")
+    if len(male_dog_list) >= 1 and len(female_dog_list) >= 1:
+        dog = True
+        for i in male_dog_list:
+            if dog_str == "":
+                dog_str += i.name
+            else:
+                dog_str += f", {i.name}"
+        for i in female_dog_list:
+            if dog_str == "":
+                dog_str += i.name
+            else:
+                dog_str += f", {i.name}"
+        num_list += 1
+        num_choices += f"/{num_list+1}"
+        print(f"{num_list}. Dog: {dog_str}")
+    if len(male_cat_list) >= 1 and len(female_cat_list) >= 1:
+        cat = True
+        for i in male_cat_list:
+            if cat_str == "":
+                cat_str += i.name
+            else:
+                cat_str += f", {i.name}"
+        for i in female_cat_list:
+            if cat_str == "":
+                cat_str += i.name
+            else:
+                cat_str += f", {i.name}"
+        num_list += 1
+        num_choices += f"/{num_list+1}"
+        print(f"{num_list}. Cat: {cat_str}")
+    if len(male_fish_list) >= 1 and len(female_fish_list) >= 1:
+        fish = True
+        for i in male_fish_list:
+            if fish_str == "":
+                fish_str += i.name
+            else:
+                fish_str += f", {i.name}"
+        for i in female_fish_list:
+            if fish_str == "":
+                fish_str += i.name
+            else:
+                fish_str += f", {i.name}"
+        num_list += 1
+        num_choices += f"/{num_list+1}"
+        print(f"{num_list}. Fish: {fish_str}")
+    if len(male_fish_list) >= 1 and len(female_fish_list) >= 1:
+        hamster = True
+        for i in male_hamster_list:
+            if hamster_str == "":
+                hamster_str += i.name
+            else:
+                hamster_str += f", {i.name}"
+        for i in female_hamster_list:
+            if hamster_str == "":
+                hamster_str += i.name
+            else:
+                hamster_str += f", {i.name}"
+        num_list += 1
+        num_choices += f"/{num_list+1}"
+        print(f"{num_list}. Hamster: {hamster_str}")
+    num_list += 1
+    print(f"{num_list}. Back")
+    breed_choice = int(input(f"({num_choices}) "))
+    if breed_choice == 1 and dog:
+        print()
+        print("Select male dog:")
+        num_choices = "1"
+        num_list = 1
+        for i in male_dog_list:
+            num_choices += f"/{num_list+1}"
+            print(i)
+        male_choice = int(input(f"({num_choices}) "))
+        print()
+        print("Select female dog:")
+        num_choices = "1"
+        num_list = 1
+        for i in female_dog_list:
+            num_choices += f"/{num_list+1}"
+            print(i)
+        female_choice = int(input(f"({num_choices}) "))
+    elif breed_choice == 1 and cat or breed_choice == 2 and cat:
+        print()
+        print("cat breed")
+    elif breed_choice == 1 and fish or breed_choice == 2 and fish or breed_choice == 3 and fish:
+        print()
+        print("fish breed")
+    elif breed_choice == 1 and hamster or breed_choice == 2 and hamster or breed_choice == 3 and hamster or breed_choice == 4 and hamster:
+        print()
+        print("hamster breed")
+    else:
+        hub_choices(day,pet_list,name_list,money,owned)
 def main():
     """main
     """
