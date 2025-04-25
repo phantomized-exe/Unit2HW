@@ -627,8 +627,7 @@ def breed_pets(day,pet_list,name_list,money,owned,male_dog_list,female_dog_list,
         print()
         dog_choice = input(f"Breed {male_dog_list[male_choice-1].name} with {female_dog_list[female_choice-1].name}? (y/n) ")
         if dog_choice == "y":
-            generate_pet(pet_list,name_list,random.randint(3,7),True,Dog,0,True)
-            print(pet_list)
+            print(generate_pet(pet_list,name_list,random.randint(3,7),True,Dog,0,True))
         else:
             breed_pets(day,pet_list,name_list,money,owned,male_dog_list,female_dog_list,male_cat_list,female_cat_list,male_fish_list,female_fish_list,male_hamster_list,female_hamster_list)
     elif breed_choice == 1 and cat or breed_choice == 2 and cat:
