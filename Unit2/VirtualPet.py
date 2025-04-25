@@ -253,6 +253,7 @@ class Hamster(VirtualPet):
     hunger = random.randint(35,125)
     energy = random.randint(50,125)
     price = random.randint(1,(happiness+hunger+energy)//6)
+    age = random.uniform(1,3)
 def gender():
     random_gender = random.randint(1,2)
     if random_gender == 1:
@@ -361,7 +362,7 @@ def generate_pet_id(pet_list):
             return code_generator
         else:
             continue
-def generate_pet(pet_list,name_list,num_pets,owned=False):
+def generate_pet(pet_list,name_list,num_pets,owned=False,pet_species=species(),age=round(random.uniform(0,20),3),set_species=False):
     """generates a pet from VirtualPet class
 
     Args:
@@ -374,13 +375,13 @@ def generate_pet(pet_list,name_list,num_pets,owned=False):
         list: returns the name, and code of generated pet(s)
     """
     for i in range(num_pets):
+        if not set_species:
+            pet_species = species()
         rand_price = random.randint(10,50)
         random_gender = gender()
         name_list = name(random_gender,name_list)
         code_id = generate_pet_id(pet_list)
-        pet = species()(code_id,random_gender,name_list[-1],rand_price)
-        if owned:
-            pet.owned = True
+        pet = pet_species(code_id,random_gender,name_list[-1],rand_price,owned,age)
         pet_list.append(pet)
     return pet_list, name_list
 def pet_choices(current_pet,pet_list,money,name_list,day,owned):
@@ -538,7 +539,7 @@ def next_day(day,owned,pet_list,name_list,money):
     pet_list = day_pet_list
     name_list = day_name_list
     decrease_stats(pet_list,name_list)
-    generate_pet(pet_list,name_list,random.randint(1,day))
+    generate_pet(pet_list,name_list,random.randint(1,day),False)
     hub_choices(day,pet_list,name_list,money,owned)
 def decrease_stats(pet_list,name_list):
     for i in pet_list[:]:
@@ -569,10 +570,6 @@ def decrease_stats(pet_list,name_list):
 def breed_pets(day,pet_list,name_list,money,owned,male_dog_list,female_dog_list,male_cat_list,female_cat_list,male_fish_list,female_fish_list,male_hamster_list,female_hamster_list):
     num_list = 0
     num_choices = "1"
-    dog_str = ""
-    cat_str = ""
-    fish_str = ""
-    hamster_str = ""
     dog = False
     cat = False
     fish = False
@@ -581,64 +578,24 @@ def breed_pets(day,pet_list,name_list,money,owned,male_dog_list,female_dog_list,
     print("Select species to breed:")
     if len(male_dog_list) >= 1 and len(female_dog_list) >= 1:
         dog = True
-        for i in male_dog_list:
-            if dog_str == "":
-                dog_str += i.name
-            else:
-                dog_str += f", {i.name}"
-        for i in female_dog_list:
-            if dog_str == "":
-                dog_str += i.name
-            else:
-                dog_str += f", {i.name}"
         num_list += 1
         num_choices += f"/{num_list+1}"
-        print(f"{num_list}. Dog: {dog_str}")
+        print(f"{num_list}. Dog")
     if len(male_cat_list) >= 1 and len(female_cat_list) >= 1:
         cat = True
-        for i in male_cat_list:
-            if cat_str == "":
-                cat_str += i.name
-            else:
-                cat_str += f", {i.name}"
-        for i in female_cat_list:
-            if cat_str == "":
-                cat_str += i.name
-            else:
-                cat_str += f", {i.name}"
         num_list += 1
         num_choices += f"/{num_list+1}"
-        print(f"{num_list}. Cat: {cat_str}")
+        print(f"{num_list}. Cat")
     if len(male_fish_list) >= 1 and len(female_fish_list) >= 1:
         fish = True
-        for i in male_fish_list:
-            if fish_str == "":
-                fish_str += i.name
-            else:
-                fish_str += f", {i.name}"
-        for i in female_fish_list:
-            if fish_str == "":
-                fish_str += i.name
-            else:
-                fish_str += f", {i.name}"
         num_list += 1
         num_choices += f"/{num_list+1}"
-        print(f"{num_list}. Fish: {fish_str}")
-    if len(male_fish_list) >= 1 and len(female_fish_list) >= 1:
+        print(f"{num_list}. Fish")
+    if len(male_hamster_list) >= 1 and len(female_hamster_list) >= 1:
         hamster = True
-        for i in male_hamster_list:
-            if hamster_str == "":
-                hamster_str += i.name
-            else:
-                hamster_str += f", {i.name}"
-        for i in female_hamster_list:
-            if hamster_str == "":
-                hamster_str += i.name
-            else:
-                hamster_str += f", {i.name}"
         num_list += 1
         num_choices += f"/{num_list+1}"
-        print(f"{num_list}. Hamster: {hamster_str}")
+        print(f"{num_list}. Hamster")
     num_list += 1
     print(f"{num_list}. Back")
     breed_choice = int(input(f"({num_choices}) "))
@@ -649,16 +606,31 @@ def breed_pets(day,pet_list,name_list,money,owned,male_dog_list,female_dog_list,
         num_list = 1
         for i in male_dog_list:
             num_choices += f"/{num_list+1}"
-            print(i)
+            print(f"{num_list}. {i.name}")
+            num_list += 1
+        print(f"{num_list}. Back")
         male_choice = int(input(f"({num_choices}) "))
+        if male_choice == num_list:
+            breed_pets(day,pet_list,name_list,money,owned,male_dog_list,female_dog_list,male_cat_list,female_cat_list,male_fish_list,female_fish_list,male_hamster_list,female_hamster_list)
         print()
         print("Select female dog:")
         num_choices = "1"
         num_list = 1
         for i in female_dog_list:
             num_choices += f"/{num_list+1}"
-            print(i)
+            print(f"{num_list}. {i.name}")
+            num_list += 1
+        print(f"{num_list}. Back")
         female_choice = int(input(f"({num_choices}) "))
+        if female_choice == num_list:
+            breed_pets(day,pet_list,name_list,money,owned,male_dog_list,female_dog_list,male_cat_list,female_cat_list,male_fish_list,female_fish_list,male_hamster_list,female_hamster_list)
+        print()
+        dog_choice = input(f"Breed {male_dog_list[male_choice-1].name} with {female_dog_list[female_choice-1].name}? (y/n) ")
+        if dog_choice == "y":
+            generate_pet(pet_list,name_list,random.randint(3,7),True,Dog,0,True)
+            print(pet_list)
+        else:
+            breed_pets(day,pet_list,name_list,money,owned,male_dog_list,female_dog_list,male_cat_list,female_cat_list,male_fish_list,female_fish_list,male_hamster_list,female_hamster_list)
     elif breed_choice == 1 and cat or breed_choice == 2 and cat:
         print()
         print("cat breed")
@@ -678,7 +650,7 @@ def main():
     pet_list = []
     name_list = []
     owned = False
-    generate_pet(pet_list,name_list,random.randint(1,5))
+    generate_pet(pet_list,name_list,random.randint(1,5),False)
     #generate_pet(pet_list,name_list,1,True)
     hub_choices(day,pet_list,name_list,money,owned)
 if __name__ == "__main__":
