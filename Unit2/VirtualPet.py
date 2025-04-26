@@ -455,7 +455,7 @@ def hub_choices(day,pet_list,name_list,money,owned):
             danger_meter = False
             num_choices += f"/{num_list+1}"
             for i in pet_list:
-                if i.condition_status() <= 20:
+                if i.condition_status() <= 25:
                     if danger_str == "":
                         danger_str += f"{i.name}"
                     else:
@@ -547,21 +547,21 @@ def decrease_stats(pet_list,name_list):
             continue
         ds = i.days_sad**2
         if i.species == "dog":
-            i.happiness -= round(random.uniform((ds*5+4)+i.age),((ds*5+4)*(150-i.energy)//10+6)+i.age,0)
+            i.happiness -= round(random.uniform((ds*3+4)+i.age,((ds*3+4)*(150-i.energy)//10+6)+i.age),0)
         else:
             i.happiness -= round(random.uniform((ds+2)+i.age,((ds+2)*(150-i.energy)//15+3)+i.age),0)
         if i.species == "cat":
-            i.hunger -= round(random.uniform((ds*5+4)+i.age,((ds*5+4)*(150-i.energy)//7+6)+i.age),0)
+            i.hunger -= round(random.uniform((ds*3+4)+i.age,((ds*3+4)*(150-i.energy)//7+6)+i.age),0)
         elif i.species == "fish" or i.species == "hamster":
             i.hunger -= round(random.uniform((ds+2)+i.age,((ds+2)*(150-i.energy)//15+3)+i.age),0)
         else:
             i.hunger -= round(random.uniform((ds+2)+i.age,((ds+2)*(150-i.energy)//20+2)+i.age),0)
         if i.species == "fish" or i.species == "hamster":
-            i.energy -= round(random.uniform((i.energy//3)+i.age,((ds+2)*(ds+2)//1+i.energy//2)+i.age),0)
+            i.energy -= round(random.uniform(i.energy//3+i.age,((ds+2)*(ds+2)//1+i.energy//2)+i.age),0)
         elif i.species == "cat":
-            i.energy -= round(random.uniform((i.energy//4)+i.age,((ds+2)*(ds+2)//2+i.energy//3)+i.age),0)
+            i.energy -= round(random.uniform(i.energy//4+i.age,((ds+2)*(ds+2)//2+i.energy//3)+i.age),0)
         else:
-            i.energy -= round(random.uniform((i.energy//5)+i.age,((ds+2)*(ds+2)//3+i.energy//4)+i.age),0)
+            i.energy -= round(random.uniform(i.energy//5+i.age,((ds+2)*(ds+2)//3+i.energy//4)+i.age),0)
         if i.condition_status() <= 0 or i.species != Hamster and i.age >= random.randint(15,25) or i.species == Hamster and i.age >= random.randint(2,3):
             print()
             if i.condition_status() <= 0:
